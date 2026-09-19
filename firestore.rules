@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signed() { return request.auth != null; }
+    function userDoc(u) { return get(/databases/$(database)/documents/users/$(u)); }
+    function chatDoc(c) { return get(/databases/$(database)/documents/chats/$(c)); }
+
+    match /users/{u} {
+      allow read: if signed();
+      allow create: if signed()
+        && request.resource.data.owner == request.auth.uid
+        && request.resource.data.username == u
+        && request.auth.token.email == u + '@messenger.app'
+        && u.matches('^[a-z][a-z0-9]*(_[a-z0-9]+)*$') && u.size() >= 3 && u.size() <= 20;
+      allow update: if signed()
+        && resource.data.owner == request.auth.uid
+        && request.resource.data.owner == resource.data.owner
+        && request.resource.data.username == resource.data.username;
+    }
+
+    match /chats/{c} {
+      allow read: if signed() && request.auth.uid in resource.data.uids;
+      allow create: if signed()
+        && request.auth.uid in request.resource.data.uids
+        && request.resource.data.uids.size() <= 50;
+      allow update: if signed()
+        && request.auth.uid in resource.data.uids
+        && request.resource.data.uids == resource.data.uids
+        && request.resource.data.members == resource.data.members;
+
+      match /messages/{m} {
+        allow read: if signed() && request.auth.uid in chatDoc(c).data.uids;
+        allow create: if signed()
+          && request.auth.uid in chatDoc(c).data.uids
+          && userDoc(request.resource.data.from).data.owner == request.auth.uid
+          && request.resource.data.keys().hasOnly(['from','t','type','text','data','dur']);
+      }
+    }
+  }
+}
