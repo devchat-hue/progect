@@ -4,6 +4,14 @@
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1a1a1e" media="(prefers-color-scheme: dark)">
 <title>Анонимный мессенджер</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Мессенджер">
+<meta name="mobile-web-app-capable" content="yes">
 <style>
 :root{--bg:#fff;--tx:#111;--sub:#707579;--acc:#3390ec;--out:rgba(199,255,163,.62);--in:rgba(255,255,255,.66);--line:#e7e7e7;--hov:#f4f4f5;--wall:#cfdcc4;--glass:rgba(255,255,255,.55);--glassb:rgba(255,255,255,.55);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1a1e;--tx:#f5f5f5;--sub:#8d9499;--acc:#8f7ff0;--out:rgba(118,106,200,.55);--in:rgba(44,44,49,.6);--line:#303030;--hov:#2c2c2c;--wall:#0f0f0f;--glass:rgba(32,32,38,.55);--glassb:rgba(255,255,255,.09)}}
@@ -55,6 +63,11 @@ audio{height:36px;max-width:100%}
 .onl{color:var(--acc);font-weight:500}
 .row.on .onl,.row.on .sub .onl{color:#fff}
 .scam{display:inline-block;border:1px solid #e5484d;color:#e5484d;border-radius:5px;font-size:10px;font-weight:700;padding:0 3px;margin-left:4px;letter-spacing:.4px;vertical-align:1px;line-height:1.35}
+.pin{color:var(--sub);font-size:13px;margin-right:2px;flex:none}
+.row.on .pin{color:#fff}
+.row.pinned{background:var(--hov)}
+:root[data-theme="dark"] .row.pinned,@media(prefers-color-scheme:dark){.row.pinned{background:#ffffff08}}
+.row.pinned.on{background:var(--acc)}
 .hav{line-height:0;flex:none;cursor:pointer}
 .stats{display:flex;gap:8px;padding:10px 12px 6px;flex-wrap:wrap}
 .st{flex:1 1 0;min-width:78px;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--glassb);border-radius:14px;padding:9px 6px;text-align:center}
@@ -134,7 +147,7 @@ audio{height:36px;max-width:100%}
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ls={g(k){try{return localStorage.getItem(k)}catch(e){return null}},s(k,v){try{localStorage.setItem(k,v)}catch(e){}},d(k){try{localStorage.removeItem(k)}catch(e){}}};
-const S={me:ls.g('me'),users:{},chats:{},cur:null,tab:'chats',q:'',un:{},t0:Date.now(),snd:ls.g('snd')!=='0',reads:JSON.parse(ls.g('reads')||'{}'),shown:new Set(),replyTo:null,msgs:{},myContacts:[],adminMode:false,adminChats:{},adminSub:'users',aq:'',blocked:[],hid:{}};
+const S={me:ls.g('me'),users:{},chats:{},cur:null,tab:'chats',q:'',un:{},t0:Date.now(),snd:ls.g('snd')!=='0',reads:JSON.parse(ls.g('reads')||'{}'),shown:new Set(),replyTo:null,msgs:{},myContacts:[],adminMode:false,adminChats:{},adminSub:'users',aq:'',blocked:[],hid:{},pinned:[]};
 let db,msgUn=null,Q=Promise.resolve(),R=null;
 const COL=['#e17076','#7bc862','#e5ca77','#65aadd','#a695e7','#ee7aae','#6ec9cb','#faa774'];
 const col=s=>COL[[...s].reduce((a,c)=>a+c.charCodeAt(0),0)%8];
@@ -178,6 +191,15 @@ async function toggleBlock(uRaw){const u=resolveUser(uRaw);if(u===S.me)return;
  try{await db.doc('users/'+S.me+'/priv/blocked').set({list},{merge:false});S.blocked=list;
   toast(on?'@'+u+' разблокирован':'@'+u+' добавлен в чёрный список');render();if(S.cur)head()}
  catch(e){toast('Не удалось: '+(e.code||e.message))}}
+
+/* ---------- закреплённые чаты ---------- */
+const isPinned=id=>(S.pinned||[]).includes(id);
+async function togglePin(id){if(!id||!S.chats[id])return;
+ const on=isPinned(id),list=on?(S.pinned||[]).filter(x=>x!==id):[...(S.pinned||[]),id];
+ if(!on&&list.length>10){toast('Можно закрепить не больше 10 чатов');return}
+ try{await db.doc('users/'+S.me+'/priv/pinned').set({list},{merge:false});S.pinned=list;
+  toast(on?'Откреплено':'Закреплено вверху списка');render()}
+ catch(e){toast('Не удалось: '+(e.code||e.message))}}
 function blacklistModal(){const bl=(S.blocked||[]).filter(u=>S.users[u]);
  $('#box').innerHTML=`<b>Чёрный список</b><div class="sub">Заблокированные не могут отправлять вам сообщения, а вы — им.</div>`+
   (bl.length?bl.map(u=>`<div class="row" style="padding:4px"><span data-uav="${esc(u)}">${avU(u)}</span><div class="mid"><b>${esc(uname(u))}${bmark(u)}</b><span class="sub">@${esc(u)}</span></div><button class="abtn" data-unblock="${esc(u)}">Разблокировать</button></div>`).join(''):'<div class="sub" style="padding:14px 0;text-align:center">Список пуст</div>')+
@@ -207,6 +229,7 @@ async function purgeChat(id,kind){const c=S.chats[id];if(!c)return;
  catch(e){toast(e.code==='permission-denied'?'Нет прав — переопубликуйте firestore.rules':'Не удалось удалить: '+(e.code||e.message))}}
 function chatMenu(id,top,left){const c=S.chats[id];if(!c)return;const dm=c.type==='dm',ou=dm?other(c):null,isOwn=isGroupLike(c)&&c.by===S.me,mm=$('#mm');
  mm.innerHTML=(dm?`<button data-cact="prof" data-cid="${esc(id)}">👤 Профиль</button>`:'')+
+  `<button data-cact="pin" data-cid="${esc(id)}">${isPinned(id)?'📌 Открепить':'📌 Закрепить'}</button>`+
   `<button data-cact="hide" data-cid="${esc(id)}">🗑 Удалить чат у себя</button>`+
   (dm?`<button data-cact="both" data-cid="${esc(id)}" style="color:#e5484d">🗑 Удалить чат у обоих</button><button data-cact="block" data-cid="${esc(id)}" style="color:${isBlocked(ou)?'var(--acc)':'#e5484d'}">${isBlocked(ou)?'✅ Разблокировать':'🚫 Заблокировать'}</button>`:'')+
   (isOwn?`<button data-cact="both" data-cid="${esc(id)}" style="color:#e5484d">🗑 Удалить ${c.type==='channel'?'канал':'группу'} у всех</button>`:'');
@@ -265,6 +288,7 @@ function enter(){if(entered)return;entered=true;
  loadHidden();
  db.doc('users/'+S.me+'/priv/contacts').onSnapshot(s=>{S.myContacts=(s.exists&&s.data().list)||[];render()},()=>{});
  db.doc('users/'+S.me+'/priv/blocked').onSnapshot(s=>{S.blocked=(s.exists&&s.data().list)||[];render();if(S.cur)head()},()=>{});
+ db.doc('users/'+S.me+'/priv/pinned').onSnapshot(s=>{S.pinned=(s.exists&&s.data().list)||[];render()},()=>{});
  db.collection('chats').where('uids','array-contains',S.uid).onSnapshot(s=>{
   S.chats={};s.docs.forEach(d=>S.chats[d.id]=d.data());
   if(S.cur&&!S.adminMode&&!S.chats[S.cur]){msgUn&&msgUn();msgUn=null;S.cur=null;$('#cv').hidden=true;$('#empty').hidden=false;$('#app').classList.remove('open')}
@@ -279,9 +303,9 @@ function enter(){if(entered)return;entered=true;
  render()}
 
 /* ---------- sidebar ---------- */
-function chatRow(id){const c=S.chats[id],t=ctitle(id),u=unread(id),l=c.last,gl=isGroupLike(c),ou=gl?null:other(c),badgeH=gl?'':bmark(ou);
+function chatRow(id){const c=S.chats[id],t=ctitle(id),u=unread(id),l=c.last,gl=isGroupLike(c),ou=gl?null:other(c),badgeH=gl?'':bmark(ou),pin=isPinned(id);
  const avH=gl?`<span data-gav="${esc(id)}">${av('#'+t,t)}</span>`:`<span data-uav="${esc(ou)}">${avU(ou)}</span>`;
- return `<div class="row ${S.cur===id?'on':''}" data-chat="${esc(id)}">${avH}<div class="mid"><b>${esc(t)}${badgeH}</b><span class="sub">${l?esc((l.from===S.me?'Вы: ':gl?uname(l.from)+': ':'')+(l.k==='voice'?'🎤 Голосовое':l.k==='circle'?'⭕ Кружок':l.k==='image'?'🖼 Фото':l.k==='video'?'🎬 Видео':l.k==='file'?'📄 Файл':l.text)):'Нет сообщений'}</span></div>${l?`<span class="sub">${tm(l.t)}</span>`:''}${u?`<span class="bd">${u}</span>`:''}</div>`}
+ return `<div class="row ${pin?'pinned':''} ${S.cur===id?'on':''}" data-chat="${esc(id)}">${avH}<div class="mid"><b>${esc(t)}${badgeH}</b><span class="sub">${l?esc((l.from===S.me?'Вы: ':gl?uname(l.from)+': ':'')+(l.k==='voice'?'🎤 Голосовое':l.k==='circle'?'⭕ Кружок':l.k==='image'?'🖼 Фото':l.k==='video'?'🎬 Видео':l.k==='file'?'📄 Файл':l.text)):'Нет сообщений'}</span></div>${pin?'<span class="pin">📌</span>':l?`<span class="sub">${tm(l.t)}</span>`:''}${u?`<span class="bd">${u}</span>`:''}</div>`}
 function userRow(u,add){const has=(S.myContacts||[]).includes(u);
  return `<div class="row" data-uav="${esc(u)}">${avU(u)}<div class="mid"><b>${esc(uname(u))}${bmark(u)}</b><span class="sub">${add?'@'+esc(u):isBlocked(u)?'в чёрном списке':statusHtml(u)}</span></div>${add&&!has&&u!==S.me?`<button class="ic" data-add="${esc(u)}" title="В контакты">➕</button>`:''}</div>`}
 /* контакты = все, кому вы писали (личные чаты) + добавленные вручную; без превью сообщений */
@@ -319,7 +343,7 @@ function render(){if($('#app').hidden)return;
  const sc=L.scrollTop;
  if(q){let hit=S.users[q]?resolveUser(q):null;if(hit===S.me)hit=null;
   h=hit&&S.users[hit]?userRow(hit,1):'<div class="sub" style="padding:20px;text-align:center">Пользователь не найден.<br>Введите точный @username целиком.</div>'}
- else if(S.tab==='chats'){const ids=Object.keys(S.chats).filter(i=>(S.chats[i].last||S.chats[i].by===S.me)&&!chatHidden(i)).sort((a,b)=>(S.chats[b].lastAt||0)-(S.chats[a].lastAt||0));
+ else if(S.tab==='chats'){const ids=Object.keys(S.chats).filter(i=>(S.chats[i].last||S.chats[i].by===S.me)&&!chatHidden(i)).sort((a,b)=>{const pa=isPinned(a),pb=isPinned(b);if(pa!==pb)return pa?-1:1;return (S.chats[b].lastAt||0)-(S.chats[a].lastAt||0)});
   h=ids.length?ids.map(chatRow).join(''):'<div class="sub" style="padding:20px;text-align:center">Чатов пока нет.<br>Найдите человека по точному @username в поиске.</div>'}
  else if(S.tab==='contacts'){const cs=contactList();
   h=`<div class="row" id="ng"><div class="av" style="background:var(--acc)">👥</div><b>Создать группу</b></div><div class="row" id="nc"><div class="av" style="background:var(--acc)">📢</div><b>Создать канал</b></div>`+
@@ -553,7 +577,7 @@ document.addEventListener('click',async e=>{const t=e.target,c=t.closest('[data-
  const rx=t.closest('[data-rx]');if(rx){react(rx.dataset.rid,rx.dataset.rx);return}
  const mmb=t.closest('#mm button');if(mmb){$('#mm').hidden=true;
   if(mmb.dataset.cact){const cid=mmb.dataset.cid,ca=mmb.dataset.cact;
-   if(ca==='hide')hideChat(cid);else if(ca==='both')purgeChat(cid);else if(ca==='prof'){const cc=S.chats[cid];cc&&openUserProfile(other(cc))}else if(ca==='block'){const cc=S.chats[cid];cc&&toggleBlock(other(cc))}return}
+   if(ca==='hide')hideChat(cid);else if(ca==='both')purgeChat(cid);else if(ca==='pin')togglePin(cid);else if(ca==='prof'){const cc=S.chats[cid];cc&&openUserProfile(other(cc))}else if(ca==='block'){const cc=S.chats[cid];cc&&toggleBlock(other(cc))}return}
  const dcb=t.closest('[data-delchan]');if(dcb){e.stopPropagation();await purgeChat(dcb.dataset.delchan);return}
   const id=mmb.dataset.id;if(mmb.dataset.act==='reply')setReply(id);else if(mmb.dataset.act==='del')delMsg(id);return}
  const ub=t.closest('[data-unblock]');if(ub){e.stopPropagation();await toggleBlock(ub.dataset.unblock);return}
@@ -622,6 +646,8 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(S.cur)
  L.addEventListener('contextmenu',e=>{const r=e.target.closest('[data-chat]');if(!r)return;e.preventDefault();S.lpChat=true;chatMenu(r.dataset.chat,e.clientY,e.clientX)});
  L.addEventListener('click',e=>{if(S.lpChat){e.stopPropagation();e.preventDefault();setTimeout(()=>S.lpChat=false,150)}},true)}
 if(ls.g('theme'))document.documentElement.dataset.theme=ls.g('theme');
+
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
 
 (async()=>{
  try{firebase.initializeApp(window.FIREBASE_CONFIG);db=firebase.firestore()}
