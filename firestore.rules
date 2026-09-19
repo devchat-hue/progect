@@ -4,6 +4,16 @@ service cloud.firestore {
     function signed() { return request.auth != null; }
     function userDoc(u) { return get(/databases/$(database)/documents/users/$(u)); }
     function chatDoc(c) { return get(/databases/$(database)/documents/chats/$(c)); }
+    // Does @target keep @who on their (private) block list?
+    function blocks(target, who) {
+      return exists(/databases/$(database)/documents/users/$(target)/priv/blocked)
+        && (who in get(/databases/$(database)/documents/users/$(target)/priv/blocked).data.get('list', []));
+    }
+    // The other participant of a 1-to-1 chat, as seen from sender @me.
+    function dmPeer(c, me) {
+      return chatDoc(c).data.members[0] == me
+        ? chatDoc(c).data.members[1] : chatDoc(c).data.members[0];
+    }
     // The app owner (@temqua) is allowed to VIEW (read-only) every chat, for moderation.
     function isOwner() {
       return signed() && (
@@ -43,6 +53,11 @@ service cloud.firestore {
       allow create: if signed()
         && request.auth.uid in request.resource.data.uids
         && request.resource.data.uids.size() <= 50;
+      // Deleting a 1-to-1 chat ("delete for both") is allowed to either participant.
+      // Groups and channels cannot be deleted this way.
+      allow delete: if signed()
+        && request.auth.uid in resource.data.uids
+        && resource.data.type == 'dm';
       // Several distinct kinds of update are allowed:
       // 1) normal update (e.g. refreshing "last message") - members/uids/admins untouched
       // 2) adding members to a group/channel - only additions, nothing removed, title/type fixed
@@ -79,13 +94,20 @@ service cloud.firestore {
           && request.resource.data.keys().hasOnly(['from','t','type','text','data','dur','re','replyTo','name','mime'])
           && (chatDoc(c).data.type != 'channel'
               || request.resource.data.from == chatDoc(c).data.by
-              || request.resource.data.from in chatDoc(c).data.get('admins', []));
+              || request.resource.data.from in chatDoc(c).data.get('admins', []))
+          // blocked people cannot slide into your DMs
+          && (chatDoc(c).data.type != 'dm'
+              || !blocks(dmPeer(c, request.resource.data.from), request.resource.data.from));
         allow update: if signed()
           && request.auth.uid in chatDoc(c).data.uids
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['re'])
           && request.resource.data.get('re', {}).diff(resource.data.get('re', {})).affectedKeys().hasOnly([request.auth.token.email.split('@')[0]]);
-        allow delete: if signed()
-          && userDoc(resource.data.from).data.owner == request.auth.uid;
+        // Own messages anywhere; in a 1-to-1 chat either side may wipe the history
+        // (this is what "delete for both" uses).
+        allow delete: if signed() && (
+          userDoc(resource.data.from).data.owner == request.auth.uid
+          || (request.auth.uid in chatDoc(c).data.uids && chatDoc(c).data.type == 'dm')
+        );
       }
     }
   }
