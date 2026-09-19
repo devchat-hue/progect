@@ -193,20 +193,23 @@ function chatHidden(id){const t=(S.hid||{})[id];if(!t)return false;const c=S.cha
 function hideChat(id){S.hid[id]=Date.now();saveHidden();
  if(S.cur===id){msgUn&&msgUn();msgUn=null;S.cur=null;$('#cv').hidden=true;$('#empty').hidden=false;$('#app').classList.remove('open')}
  toast('Чат удалён у вас');render()}
-async function purgeChat(id){const c=S.chats[id];if(!c)return;
- if(!confirm('Удалить переписку у обоих? Все сообщения будут стёрты безвозвратно.'))return;
- toast('Удаляю переписку…');
- try{for(let i=0;i<40;i++){const snap=await db.collection('chats/'+id+'/messages').limit(200).get();
+async function purgeChat(id,kind){const c=S.chats[id];if(!c)return;
+ const isCh=c.type==='channel',isGrp=c.type==='group';
+ const label=isCh?'канал':isGrp?'группу':'переписку';
+ if(!confirm('Удалить '+label+' у всех участников? Все сообщения будут стёрты безвозвратно.'))return;
+ toast('Удаляю '+label+'…');
+ try{for(let i=0;i<60;i++){const snap=await db.collection('chats/'+id+'/messages').limit(200).get();
    if(snap.empty)break;const b=db.batch();snap.docs.forEach(d=>b.delete(d.ref));await b.commit();if(snap.size<200)break}
   await db.doc('chats/'+id).delete();
   delete S.chats[id];delete S.un[id];delete S.hid[id];saveHidden();
   if(S.cur===id){msgUn&&msgUn();msgUn=null;S.cur=null;$('#cv').hidden=true;$('#empty').hidden=false;$('#app').classList.remove('open')}
-  toast('Переписка удалена');render()}
+  $('#modal').hidden=true;toast(isCh?'Канал удалён':isGrp?'Группа удалена':'Переписка удалена');render()}
  catch(e){toast(e.code==='permission-denied'?'Нет прав — переопубликуйте firestore.rules':'Не удалось удалить: '+(e.code||e.message))}}
-function chatMenu(id,top,left){const c=S.chats[id];if(!c)return;const dm=c.type==='dm',ou=dm?other(c):null,mm=$('#mm');
+function chatMenu(id,top,left){const c=S.chats[id];if(!c)return;const dm=c.type==='dm',ou=dm?other(c):null,isOwn=isGroupLike(c)&&c.by===S.me,mm=$('#mm');
  mm.innerHTML=(dm?`<button data-cact="prof" data-cid="${esc(id)}">👤 Профиль</button>`:'')+
   `<button data-cact="hide" data-cid="${esc(id)}">🗑 Удалить чат у себя</button>`+
-  (dm?`<button data-cact="both" data-cid="${esc(id)}" style="color:#e5484d">🗑 Удалить чат у обоих</button><button data-cact="block" data-cid="${esc(id)}" style="color:${isBlocked(ou)?'var(--acc)':'#e5484d'}">${isBlocked(ou)?'✅ Разблокировать':'🚫 Заблокировать'}</button>`:'');
+  (dm?`<button data-cact="both" data-cid="${esc(id)}" style="color:#e5484d">🗑 Удалить чат у обоих</button><button data-cact="block" data-cid="${esc(id)}" style="color:${isBlocked(ou)?'var(--acc)':'#e5484d'}">${isBlocked(ou)?'✅ Разблокировать':'🚫 Заблокировать'}</button>`:'')+
+  (isOwn?`<button data-cact="both" data-cid="${esc(id)}" style="color:#e5484d">🗑 Удалить ${c.type==='channel'?'канал':'группу'} у всех</button>`:'');
  mm.hidden=false;mm.style.top=Math.min(innerHeight-130,Math.max(8,top))+'px';mm.style.left=Math.max(8,Math.min(innerWidth-8-mm.offsetWidth,left))+'px'}
 function resolveUser(u){let x=S.users[u],seen=new Set();while(x&&x.renamedTo&&!seen.has(x.renamedTo)){seen.add(x.renamedTo);const nx=S.users[x.renamedTo];if(!nx)break;u=x.renamedTo;x=nx}return u}
 function uidToUser(uid){let fb=null;for(const k in S.users){const x=S.users[k];if(x.owner===uid){if(!x.renamedTo)return k;fb=fb||k}}return fb}
@@ -513,7 +516,7 @@ function openChatProfile(id){const c=S.chats[id];if(!c){toast('Чат не на�
  const isCh=c.type==='channel';
  $('#box').innerHTML=`<div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px">${av('#'+c.title,c.title,'avbig')}<div><b style="font-size:17px">${esc(c.title)}</b></div><div class="sub">${isCh?'Канал':'Группа'} · ${c.members.length} участник(ов)</div>
   <div style="width:100%;text-align:left;max-height:200px;overflow:auto">${c.members.map(m=>`<div class="row" style="padding:4px" data-uav="${esc(m)}">${avU(m)}<div class="mid"><b>${esc(uname(m))}${bmark(m)}${isCh&&(c.by===m||(c.admins||[]).includes(m))?' <span class="sub">· админ</span>':''}</b><span class="sub">@${esc(m)}</span></div></div>`).join('')}</div>
-  ${isCh&&c.by===S.me?'<button class="pri" id="pfadm">Управление администраторами</button>':''}<button id="pfx">Закрыть</button></div>`;
+  ${isCh&&c.by===S.me?'<button class="pri" id="pfadm">Управление администраторами</button>':''}${c.by===S.me?`<button data-delchan="${esc(id)}" style="color:#e5484d">🗑 Удалить ${isCh?'канал':'группу'}</button>`:''}<button id="pfx">Закрыть</button></div>`;
  $('#modal').hidden=false;
  if(isCh&&c.by===S.me)$('#pfadm').onclick=()=>channelAdminsModal(id);
  $('#pfx').onclick=()=>$('#modal').hidden=true}
@@ -551,6 +554,7 @@ document.addEventListener('click',async e=>{const t=e.target,c=t.closest('[data-
  const mmb=t.closest('#mm button');if(mmb){$('#mm').hidden=true;
   if(mmb.dataset.cact){const cid=mmb.dataset.cid,ca=mmb.dataset.cact;
    if(ca==='hide')hideChat(cid);else if(ca==='both')purgeChat(cid);else if(ca==='prof'){const cc=S.chats[cid];cc&&openUserProfile(other(cc))}else if(ca==='block'){const cc=S.chats[cid];cc&&toggleBlock(other(cc))}return}
+ const dcb=t.closest('[data-delchan]');if(dcb){e.stopPropagation();await purgeChat(dcb.dataset.delchan);return}
   const id=mmb.dataset.id;if(mmb.dataset.act==='reply')setReply(id);else if(mmb.dataset.act==='del')delMsg(id);return}
  const ub=t.closest('[data-unblock]');if(ub){e.stopPropagation();await toggleBlock(ub.dataset.unblock);return}
  const bb=t.closest('[data-block]');if(bb){e.stopPropagation();$('#modal').hidden=true;await toggleBlock(bb.dataset.block);return}
