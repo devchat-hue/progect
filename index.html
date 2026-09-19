@@ -86,8 +86,8 @@ audio{height:36px;max-width:100%}
 .rx span{background:#0000000d;border-radius:12px;padding:0 7px;font-size:13px;cursor:pointer;color:var(--tx);border:1px solid transparent}.rx span.me{border-color:var(--acc)}
 #pk{position:fixed;z-index:8;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glassb);border-radius:22px;padding:4px 6px;box-shadow:0 4px 20px #0004;display:flex;gap:2px}
 #pk button{font-size:22px;padding:2px 4px}
-#mm{position:fixed;z-index:8;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glassb);border-radius:12px;box-shadow:0 4px 20px #0004;overflow:hidden;display:flex;flex-direction:column;min-width:150px}
-#mm button{padding:9px 14px;text-align:left}#mm button:hover{background:#0000000d}
+#mm{position:fixed;z-index:8;max-width:calc(100vw - 16px);background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glassb);border-radius:12px;box-shadow:0 4px 20px #0004;overflow:hidden;display:flex;flex-direction:column;min-width:150px}
+#mm button{padding:10px 14px;text-align:left;white-space:nowrap}#mm button:hover{background:#0000000d}
 .m{-webkit-touch-callout:none;user-select:none}
 .cf{position:fixed;top:40vh;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:99;animation:cf 1.4s ease-out forwards}
 @keyframes cf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--x),70vh) rotate(540deg);opacity:0}}
@@ -116,7 +116,7 @@ audio{height:36px;max-width:100%}
   <nav id="nav"><button data-t="chats">Чаты</button><button data-t="contacts">Контакты</button><button data-t="settings">Настройки</button><button data-t="admin" id="navadmin" hidden>Админ</button></nav></aside>
  <main><div id="empty">Выберите чат</div>
   <section id="cv" hidden>
-   <div id="hd"><button id="back">‹</button><div class="hav" id="hav"></div><div class="mid"><b id="htl"></b><span class="sub" id="hsb"></span></div><button class="ic" id="addm" title="Добавить участников" hidden>➕</button></div>
+   <div id="hd"><button id="back">‹</button><div class="hav" id="hav"></div><div class="mid"><b id="htl"></b><span class="sub" id="hsb"></span></div><button class="ic" id="addm" title="Добавить участников" hidden>➕</button><button class="ic" id="hmenu" title="Меню чата" hidden>⋮</button></div>
    <div id="msgs"></div><video id="prev" muted playsinline></video>
    <div id="replybar"><div class="rp"><b id="rpn"></b><span id="rpt"></span></div><button class="ic" id="rpx">✕</button></div>
    <div id="robar" hidden></div>
@@ -204,9 +204,10 @@ async function purgeChat(id){const c=S.chats[id];if(!c)return;
   toast('Переписка удалена');render()}
  catch(e){toast(e.code==='permission-denied'?'Нет прав — переопубликуйте firestore.rules':'Не удалось удалить: '+(e.code||e.message))}}
 function chatMenu(id,top,left){const c=S.chats[id];if(!c)return;const dm=c.type==='dm',ou=dm?other(c):null,mm=$('#mm');
- mm.innerHTML=`<button data-cact="hide" data-cid="${esc(id)}">🗑 Удалить у себя</button>`+
-  (dm?`<button data-cact="both" data-cid="${esc(id)}" style="color:#e5484d">🗑 Удалить у обоих</button><button data-cact="block" data-cid="${esc(id)}">${isBlocked(ou)?'✅ Разблокировать':'🚫 В чёрный список'}</button>`:'');
- mm.hidden=false;mm.style.top=Math.min(innerHeight-130,Math.max(8,top))+'px';mm.style.left=Math.min(innerWidth-186,Math.max(8,left))+'px'}
+ mm.innerHTML=(dm?`<button data-cact="prof" data-cid="${esc(id)}">👤 Профиль</button>`:'')+
+  `<button data-cact="hide" data-cid="${esc(id)}">🗑 Удалить чат у себя</button>`+
+  (dm?`<button data-cact="both" data-cid="${esc(id)}" style="color:#e5484d">🗑 Удалить чат у обоих</button><button data-cact="block" data-cid="${esc(id)}" style="color:${isBlocked(ou)?'var(--acc)':'#e5484d'}">${isBlocked(ou)?'✅ Разблокировать':'🚫 Заблокировать'}</button>`:'');
+ mm.hidden=false;mm.style.top=Math.min(innerHeight-130,Math.max(8,top))+'px';mm.style.left=Math.max(8,Math.min(innerWidth-8-mm.offsetWidth,left))+'px'}
 function resolveUser(u){let x=S.users[u],seen=new Set();while(x&&x.renamedTo&&!seen.has(x.renamedTo)){seen.add(x.renamedTo);const nx=S.users[x.renamedTo];if(!nx)break;u=x.renamedTo;x=nx}return u}
 function uidToUser(uid){let fb=null;for(const k in S.users){const x=S.users[k];if(x.owner===uid){if(!x.renamedTo)return k;fb=fb||k}}return fb}
 const dmId=(a,b)=>'dm_'+[a,b].sort().join('__');
@@ -358,14 +359,14 @@ async function openDM(uRaw){const u=resolveUser(uRaw),tu=S.users[u];if(!tu||!tu.
 function head(){const id=S.cur,c=S.adminMode?(S.adminChats[id]||S.chats[id]):S.chats[id];if(!c)return;
  if(S.adminMode){const label=isGroupLike(c)?c.title:(c.members||[]).map(m=>'@'+m).join(' ↔ ');
   $('#hav').innerHTML=av('#'+label,label);
-  $('#htl').textContent=label;$('#hsb').textContent='Просмотр администратора · '+(c.members||[]).length+' участ.';$('#addm').hidden=true;
+  $('#htl').textContent=label;$('#hsb').textContent='Просмотр администратора · '+(c.members||[]).length+' участ.';$('#addm').hidden=true;$('#hmenu').hidden=true;
   $('#cmp').hidden=true;$('#robar').hidden=false;$('#robar').textContent='Режим администратора: только просмотр чужого чата';return}
  const isG=isGroupLike(c),isCh=c.type==='channel',ot=isG?null:other(c),t=isG?c.title:uname(ot),canW=canWrite(c);
  $('#hav').innerHTML=isG?av('#'+t,t):avU(ot);
  $('#htl').innerHTML=esc(t)+(isG?'':bmark(ot));
  if(isG)$('#hsb').textContent=(isCh?'Канал · ':'')+c.members.length+' участн.: '+c.members.map(uname).join(', ');
  else $('#hsb').innerHTML=statusHtml(ot);
- $('#addm').hidden=!(c.type==='group'||(isCh&&canW));
+ $('#addm').hidden=!(c.type==='group'||(isCh&&canW));$('#hmenu').hidden=false;
  const bl=!isG&&isBlocked(ot);
  $('#cmp').hidden=!canW||bl;
  if(bl){$('#robar').hidden=false;$('#robar').innerHTML='Пользователь в чёрном списке · <button style="color:var(--acc)" data-unblock="'+esc(ot)+'">Разблокировать</button>';clearReply()}
@@ -549,7 +550,7 @@ document.addEventListener('click',async e=>{const t=e.target,c=t.closest('[data-
  const rx=t.closest('[data-rx]');if(rx){react(rx.dataset.rid,rx.dataset.rx);return}
  const mmb=t.closest('#mm button');if(mmb){$('#mm').hidden=true;
   if(mmb.dataset.cact){const cid=mmb.dataset.cid,ca=mmb.dataset.cact;
-   if(ca==='hide')hideChat(cid);else if(ca==='both')purgeChat(cid);else if(ca==='block'){const cc=S.chats[cid];cc&&toggleBlock(other(cc))}return}
+   if(ca==='hide')hideChat(cid);else if(ca==='both')purgeChat(cid);else if(ca==='prof'){const cc=S.chats[cid];cc&&openUserProfile(other(cc))}else if(ca==='block'){const cc=S.chats[cid];cc&&toggleBlock(other(cc))}return}
   const id=mmb.dataset.id;if(mmb.dataset.act==='reply')setReply(id);else if(mmb.dataset.act==='del')delMsg(id);return}
  const ub=t.closest('[data-unblock]');if(ub){e.stopPropagation();await toggleBlock(ub.dataset.unblock);return}
  const bb=t.closest('[data-block]');if(bb){e.stopPropagation();$('#modal').hidden=true;await toggleBlock(bb.dataset.block);return}
@@ -568,6 +569,7 @@ document.addEventListener('click',async e=>{const t=e.target,c=t.closest('[data-
  if(t.closest('#myav')){$('#avf').click();return}
  if(t.closest('#ba')){$('#atf').click();return}
  if(t.closest('#addm')){addMembersModal();return}
+ if(t.closest('#hmenu')){const r=t.closest('#hmenu').getBoundingClientRect();if(S.cur&&!S.adminMode)chatMenu(S.cur,r.bottom+6,r.left-170);e.stopPropagation();return}
  const wp=t.closest('.wp');if(wp){ls.d('wallImg');ls.s('wallPreset',wp.dataset.wall||'');applyWallpaper();render();return}
  if(t.closest('#wpupl')){$('#wpf').click();return}
  if(t.closest('#wpdel')){ls.d('wallImg');applyWallpaper();render();return}
