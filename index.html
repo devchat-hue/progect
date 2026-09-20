@@ -1,35 +1,51 @@
 <!DOCTYPE html>
 <html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1a1a1e" media="(prefers-color-scheme: dark)">
-<title>Анонимный мессенджер</title>
+<meta name="theme-color" content="#0b0b12">
+<meta name="format-detection" content="telephone=no">
+<title>Shadow — говори свободно</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Мессенджер">
+<meta name="apple-mobile-web-app-title" content="Shadow">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
-:root{--bg:#fff;--tx:#111;--sub:#707579;--acc:#3390ec;--out:rgba(199,255,163,.62);--in:rgba(255,255,255,.66);--line:#e7e7e7;--hov:#f4f4f5;--wall:#cfdcc4;--glass:rgba(255,255,255,.55);--glassb:rgba(255,255,255,.55);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1a1e;--tx:#f5f5f5;--sub:#8d9499;--acc:#8f7ff0;--out:rgba(118,106,200,.55);--in:rgba(44,44,49,.6);--line:#303030;--hov:#2c2c2c;--wall:#0f0f0f;--glass:rgba(32,32,38,.55);--glassb:rgba(255,255,255,.09)}}
-:root[data-theme="dark"]{--bg:#1a1a1e;--tx:#f5f5f5;--sub:#8d9499;--acc:#8f7ff0;--out:rgba(118,106,200,.55);--in:rgba(44,44,49,.6);--line:#303030;--hov:#2c2c2c;--wall:#0f0f0f;--glass:rgba(32,32,38,.55);--glassb:rgba(255,255,255,.09)}
-*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden}
+:root{--bg:#f5f5fa;--tx:#15151d;--sub:#6b6f80;--acc:#6c5ce7;--acc2:#4f7fff;--out:rgba(108,92,231,.16);--in:rgba(255,255,255,.9);--line:#e4e4ee;--hov:#ececf5;--wall:#e7e7f3;--glass:rgba(255,255,255,.68);--glassb:rgba(30,30,50,.08);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0b12;--tx:#f2f2f8;--sub:#8b8fa8;--acc:#7c6cf0;--acc2:#5b8cff;--out:rgba(124,108,240,.35);--in:rgba(30,30,42,.65);--line:#232336;--hov:#1a1a26;--wall:#07070d;--glass:rgba(18,18,28,.62);--glassb:rgba(255,255,255,.08)}}
+:root[data-theme="dark"]{--bg:#0b0b12;--tx:#f2f2f8;--sub:#8b8fa8;--acc:#7c6cf0;--acc2:#5b8cff;--out:rgba(124,108,240,.35);--in:rgba(30,30,42,.65);--line:#232336;--hov:#1a1a26;--wall:#07070d;--glass:rgba(18,18,28,.62);--glassb:rgba(255,255,255,.08)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior-y:contain}
 @supports (height:100dvh){html,body{height:100dvh}}
 /* iOS Safari увеличивает страницу при фокусе на поле с размером шрифта
    меньше 16px — из-за этого «всё едет». Держим инпуты не мельче 16px. */
 input,textarea,select{font-size:16px}
 @media(min-width:701px){input,textarea,select{font-size:15px}}
-body{background:radial-gradient(circle at 10% 15%,#ff9a9e3d 0,transparent 45%),radial-gradient(circle at 90% 10%,#6ec6ff40 0,transparent 45%),radial-gradient(circle at 50% 90%,#a78bfa3d 0,transparent 50%),radial-gradient(circle at 92% 92%,#34d3993d 0,transparent 45%),var(--bg);background-attachment:fixed;color:var(--tx);font:15px/1.4 -apple-system,"Segoe UI",Roboto,sans-serif}
+body{background:radial-gradient(circle at 12% 8%,#7c6cf03d 0,transparent 42%),radial-gradient(circle at 88% 6%,#5b8cff33 0,transparent 42%),radial-gradient(circle at 50% 100%,#7c6cf026 0,transparent 55%),var(--bg);background-attachment:fixed;color:var(--tx);font:15px/1.4 -apple-system,"Segoe UI",Roboto,sans-serif}
 button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none;touch-action:manipulation}
 input,textarea{background:var(--hov);border:1px solid var(--line);border-radius:14px;padding:10px 12px;outline:none;width:100%;font:inherit;color:inherit}
 input:focus,textarea:focus{border-color:var(--acc)}
-.pri{background:var(--acc);color:#fff;border-radius:14px;padding:10px 16px;font-weight:600}
-#auth{max-width:340px;margin:12vh auto;padding:22px;display:flex;flex-direction:column;gap:12px;text-align:center;border-radius:22px}
-#auth h1{margin:0;font-size:22px}.err{color:#e5484d;min-height:20px;font-size:13px}.sub{color:var(--sub);font-size:13px}
+.pri{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border-radius:14px;padding:11px 16px;font-weight:600;box-shadow:0 6px 18px -6px #6c5ce780;transition:transform .15s,box-shadow .15s}
+.pri:hover{transform:translateY(-1px);box-shadow:0 10px 22px -6px #6c5ce7a0}
+.pri:active{transform:translateY(0)}
+.pri:disabled{opacity:.6;transform:none;box-shadow:none}
+.sec{background:transparent;color:var(--tx);border:1.5px solid var(--glassb);border-radius:14px;padding:10px 16px;font-weight:600}
+.sec:hover{background:var(--hov)}
+#authwrap{max-width:380px;margin:0 auto;min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px 18px}
+#auth{width:100%;padding:26px 22px;display:flex;flex-direction:column;gap:12px;text-align:center;border-radius:26px;background:var(--glass);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid var(--glassb);box-shadow:0 24px 60px -20px #00000055}
+#auth h1{margin:2px 0 0;font-size:23px;letter-spacing:.5px}
+#alogo{width:88px;height:88px;margin:0 auto 2px;filter:drop-shadow(0 8px 24px #6c5ce766)}
+#atag{color:var(--sub);font-size:13px;margin-top:-8px}
+.err{color:#e5484d;min-height:20px;font-size:13px}.sub{color:var(--sub);font-size:13px}
+#authland{display:flex;flex-direction:column;gap:10px}
+#authform{display:flex;flex-direction:column;gap:12px}
+#authform[hidden],#authland[hidden]{display:none}
+#backland{align-self:flex-start;color:var(--acc);font-weight:600;font-size:13px;padding:4px 0}
 #app{display:grid;grid-template-columns:340px 1fr;height:100%}
+#sidehead{display:flex;align-items:center;gap:8px;padding:10px 12px 0}
+#sidehead svg{width:26px;height:26px;flex:none}
+#sidehead b{font-size:15px;letter-spacing:.4px;font-weight:700}
 aside{border-right:1px solid var(--glassb);display:flex;flex-direction:column;min-height:0}
 .top{padding:10px}#list{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .row{display:flex;gap:10px;padding:9px 12px;align-items:center;cursor:pointer;touch-action:manipulation}.row:hover{background:var(--hov)}.row.on{background:var(--acc);color:#fff}.row.on .sub{color:#e8e8ff}
@@ -159,19 +175,49 @@ audio{height:36px;max-width:100%}
  #ringbox .av{width:96px;height:96px;font-size:34px}
  .m{max-width:86%}
 }
+/* Десктоп / широкие окна: центрируем ленту сообщений и композер, чтобы
+   строки не растягивались на весь ультраширокий монитор, плюс более
+   заметные hover-состояния — на десктопе всегда есть курсор мыши. */
+@media(min-width:701px){
+ .row:hover{background:var(--hov)}
+ #msgs{padding-left:calc(50% - 340px);padding-right:calc(50% - 340px)}
+ #msgs.wide{padding-left:12px;padding-right:12px}
+ #cmp,#replybar{padding-left:calc(50% - 340px);padding-right:calc(50% - 340px)}
+ @media(max-width:1180px){#msgs,#cmp,#replybar{padding-left:12px;padding-right:12px}}
+ ::-webkit-scrollbar{width:9px;height:9px}
+ ::-webkit-scrollbar-thumb{background:var(--glassb);border-radius:6px}
+ ::-webkit-scrollbar-thumb:hover{background:var(--acc)}
+ #app{grid-template-columns:360px 1fr}
+}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
  aside,#hd,#cmp,#nav,#box,#toast,#pk,#mm,#auth,#replybar,.m{background:var(--bg)}
 }
 </style></head><body>
-<div id="auth" hidden>
- <h1>Анонимный мессенджер</h1><div class="sub" id="asub">Без номера телефона. Только уникальный @username.</div>
- <div id="authaccs" hidden></div>
- <input id="au" placeholder="@username (a-z, 0-9, _)" maxlength="20" autocapitalize="off">
- <input id="an" placeholder="Имя (необязательно)" maxlength="30">
- <input id="ap" type="password" placeholder="Пароль (мин. 6 символов)" autocomplete="current-password"><button class="pri" id="ago">Создать аккаунт</button><button id="asw" class="sub"></button><button id="acancel" class="sub" hidden>← Вернуться к моему аккаунту</button><div class="err" id="ae"></div>
-</div>
+<div id="authwrap" hidden><div id="auth">
+ <svg id="alogo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8f7ff0"/><stop offset="1" stop-color="#5b8cff"/></linearGradient></defs>
+  <rect x="4" y="4" width="112" height="112" rx="28" fill="#0e0e18"/>
+  <rect x="4" y="4" width="112" height="112" rx="28" fill="url(#hg)" fill-opacity=".14"/>
+  <path d="M60 18c-19 0-30 15-30 34v20c0 8-4 13-9 17 6 5 15 7 39 7s33-2 39-7c-5-4-9-9-9-17V52c0-19-11-34-30-34z" fill="url(#hg)"/>
+  <path d="M42 62c3 7 9 12 18 12s15-5 18-12c-4 6-10 9-18 9s-14-3-18-9z" fill="#0e0e18"/>
+ </svg>
+ <h1>SHADOW</h1><div class="sub" id="atag">Говори свободно</div>
+ <div id="authland">
+  <button class="pri" id="landStart">Начать</button>
+  <button class="sec" id="landLogin">Войти</button>
+ </div>
+ <div id="authform" hidden>
+  <div class="sub" id="asub">Без номера телефона. Только уникальный @username.</div>
+  <div id="authaccs" hidden></div>
+  <input id="au" placeholder="@username (a-z, 0-9, _)" maxlength="20" autocapitalize="off">
+  <input id="an" placeholder="Имя (необязательно)" maxlength="30">
+  <input id="ap" type="password" placeholder="Пароль (мин. 6 символов)" autocomplete="current-password"><button class="pri" id="ago">Создать аккаунт</button><button id="asw" class="sub"></button><button id="acancel" class="sub" hidden>← Вернуться к моему аккаунту</button>
+  <button id="backland" class="sub" hidden>← Назад</button>
+  <div class="err" id="ae"></div>
+ </div>
+</div></div>
 <div id="app" hidden>
- <aside><div class="top"><input id="q" placeholder="Точный @username человека"></div><div id="list"></div>
+ <aside><div id="sidehead"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="hg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8f7ff0"/><stop offset="1" stop-color="#5b8cff"/></linearGradient></defs><rect x="4" y="4" width="112" height="112" rx="28" fill="#0e0e18"/><path d="M60 18c-19 0-30 15-30 34v20c0 8-4 13-9 17 6 5 15 7 39 7s33-2 39-7c-5-4-9-9-9-17V52c0-19-11-34-30-34z" fill="url(#hg2)"/><path d="M42 62c3 7 9 12 18 12s15-5 18-12c-4 6-10 9-18 9s-14-3-18-9z" fill="#0e0e18"/></svg><b>Shadow</b></div><div class="top"><input id="q" placeholder="Точный @username человека"></div><div id="list"></div>
   <nav id="nav"><button data-t="chats">Чаты</button><button data-t="contacts">Контакты</button><button data-t="settings">Настройки</button><button data-t="admin" id="navadmin" hidden>Админ</button></nav></aside>
  <main><div id="empty">Выберите чат</div>
   <section id="cv" hidden>
@@ -198,6 +244,7 @@ audio{height:36px;max-width:100%}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -352,7 +399,42 @@ function tone(freq,dur,delay,vol){const a=actx();if(!a)return;
  g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(vol||.09,t0+.02);
  g.gain.exponentialRampToValueAtTime(.0001,t0+(dur||.25));o.start(t0);o.stop(t0+(dur||.25)+.02)}
 function beep(){if(!S.snd)return;tone(800,.25,0,.08)}
-function badge(){const n=Object.values(S.un).reduce((a,b)=>a+b,0);document.title=(n?`(${n}) `:'')+'Мессенджер'}
+function badge(){const n=Object.values(S.un).reduce((a,b)=>a+b,0);document.title=(n?`(${n}) `:'')+'Shadow'}
+
+/* =========================================================================
+   PUSH-УВЕДОМЛЕНИЯ (Firebase Cloud Messaging), включая звонки в фоне.
+   Пока вкладка открыта, новые сообщения и звонки видны через onSnapshot
+   (см. enter()/watchCalls()) — это работает всегда и без всякой настройки.
+   А вот когда вкладка/браузер закрыты или телефон заблокирован, показать
+   уведомление может только настоящий push, доставленный через сервис-воркер.
+   Для этого нужны ДВЕ половины:
+    1) эта — клиентская: получаем разрешение, получаем FCM-токен устройства
+       и сохраняем его в users/<me>/priv/push, чтобы было куда слать;
+    2) серверная — облачная функция (см. functions/index.js в архиве),
+       которая при новом сообщении/звонке реально ОТПРАВЛЯЕТ push на эти
+       токены. Без неё токен просто лежит в базе и push не приходит —
+       описание разворачивания смотрите в functions/README.md.
+   ========================================================================= */
+let swReg=null,MSG=null;
+function getMessagingSafe(){if(MSG)return MSG;
+ try{if(!firebase.messaging||!firebase.messaging.isSupported)return null;
+  MSG=firebase.messaging();return MSG}catch(e){return null}}
+async function enablePush(){
+ try{
+  if(!('serviceWorker' in navigator)||!window.FIREBASE_VAPID_KEY){return}
+  swReg=swReg||await navigator.serviceWorker.ready.catch(()=>null);if(!swReg)return;
+  const msg=getMessagingSafe();if(!msg)return;
+  const token=await msg.getToken({vapidKey:window.FIREBASE_VAPID_KEY,serviceWorkerRegistration:swReg}).catch(()=>null);
+  if(!token)return;
+  ls.s('pushTok',token);
+  await db.doc('users/'+S.me+'/priv/push').set({tokens:firebase.firestore.FieldValue.arrayUnion(token),ua:navigator.userAgent.slice(0,120),t:Date.now()},{merge:true}).catch(()=>{});
+ }catch(e){/* тихо: пуш — необязательная возможность, не должен ронять приложение */}}
+async function disablePush(){try{const tok=ls.g('pushTok');ls.d('pushTok');
+ if(tok&&db&&S.me)await db.doc('users/'+S.me+'/priv/push').update({tokens:firebase.firestore.FieldValue.arrayRemove(tok)}).catch(()=>{});
+ const msg=getMessagingSafe();if(msg)await msg.deleteToken().catch(()=>{});}catch(e){}}
+/* по клику на пуш сервис-воркер шлёт нам сообщение — откроем нужный чат */
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{
+ const d=e.data||{};if(d.type==='open-chat'&&d.chatId){if(S.chats[d.chatId])openChat(d.chatId);}});
 function unread(id){const c=S.chats[id];if(S.un[id])return S.un[id];return c.last&&c.last.from!==S.me&&c.last.t>(S.reads[id]||0)?1:0}
 function markRead(id){S.un[id]=0;const c=S.chats[id];const val=Math.max(Date.now(),c?.last?.t||0);S.reads[id]=val;ls.s('reads',JSON.stringify(S.reads));badge();
  if(c&&db){const prev=(c.reads&&c.reads[S.me])||0;if(val>prev){c.reads=c.reads||{};c.reads[S.me]=val;
@@ -372,6 +454,14 @@ function popHeart(el){const h=document.createElement('span');h.className='hp';h.
 /* ---------- auth ---------- */
 let AM='reg';const EM=u=>u+'@messenger.app';
 function setMode(m){AM=m;$('#an').hidden=m==='login';$('#ago').textContent=m==='reg'?'Создать аккаунт':'Войти';$('#asw').textContent=m==='reg'?'Уже есть аккаунт? Войти':'Нет аккаунта? Регистрация';$('#ae').textContent='';authAccs()}
+/* Начальный экран Shadow: логотип + «Начать»/«Войти» (как в макете), форма
+   с полями появляется только после выбора одного из двух вариантов —
+   либо сразу, если на устройстве уже есть сохранённая сессия/аккаунты. */
+function showAuthForm(mode){if(mode)setMode(mode);$('#authland').hidden=true;$('#authform').hidden=false;$('#backland').hidden=!!(ls.g('me')||ACC.list().length)}
+function showAuthLand(){$('#authland').hidden=false;$('#authform').hidden=true}
+$('#landStart').onclick=()=>showAuthForm('reg');
+$('#landLogin').onclick=()=>showAuthForm('login');
+$('#backland').onclick=()=>showAuthLand();
 /* список сохранённых аккаунтов прямо на экране входа */
 function authAccs(){const box=$('#authaccs'),l=ACC.list(),adding=ls.g('addAcc')==='1';
  $('#asub').textContent=adding?'Добавление ещё одного аккаунта. Ваши прежние аккаунты сохранены — переключайтесь одним касанием.':'Без номера телефона. Только уникальный @username.';
@@ -401,11 +491,12 @@ async function register(){
 }
 let entered=false;
 function enter(){if(entered)return;entered=true;
- $('#auth').hidden=true;$('#app').hidden=false;S.t0=Date.now();
+ $('#authwrap').hidden=true;$('#app').hidden=false;S.t0=Date.now();
  $('#navadmin').hidden=!isCreator(S.me);
  applyWallpaper();startPresence();
  db.collection('users').onSnapshot(s=>{S.users={};s.docs.forEach(d=>{const x=d.data();if(x&&x.username)S.users[d.id]=x});renderSoon();grantNayk()},e=>toast('Ошибка: '+e.code));
  loadHidden();watchCalls();
+ if(window.Notification&&Notification.permission==='granted'&&ls.g('ntf')!=='0')enablePush();
  db.doc('users/'+S.me+'/priv/contacts').onSnapshot(s=>{S.myContacts=(s.exists&&s.data().list)||[];render()},()=>{});
  db.doc('users/'+S.me+'/priv/blocked').onSnapshot(s=>{S.blocked=(s.exists&&s.data().list)||[];render();if(S.cur)head()},()=>{});
  db.doc('users/'+S.me+'/priv/pinned').onSnapshot(s=>{S.pinned=(s.exists&&s.data().list)||[];render()},()=>{});
@@ -417,7 +508,7 @@ function enter(){if(entered)return;entered=true;
     if(S.cur===id&&!document.hidden){markRead(id)}else{S.un[id]=(S.un[id]||0)+1;badge();beep();
      const body=c.last.k==='voice'?'🎤 Голосовое':c.last.k==='circle'?'🎬 Видео':c.last.k==='image'?'🖼 Фото':c.last.k==='video'?'🎬 Видео':c.last.k==='file'?'📄 Файл':c.last.text;
      const T=(c.type==='group'||c.type==='channel')?c.title+': '+uname(c.last.from):uname(c.last.from);toast(T+' — '+body,()=>openChat(id));
-     try{if(window.Notification&&Notification.permission==='granted'&&ls.g('ntf')!=='0')new Notification(T,{body})}catch(e){}}}});
+     try{if(window.Notification&&Notification.permission==='granted'&&ls.g('ntf')!=='0')new Notification(T,{body,icon:'icons/icon-192.png',badge:'icons/icon-96.png',tag:'msg-'+id,renotify:true})}catch(e){}}}});
   if(S.cur){head();if(!S.adminMode)refreshTicks()}
   render()},e=>toast('Ошибка: '+e.code));
  render()}
@@ -626,8 +717,8 @@ function stopRec(c){if(!R)return;R.cancel=!!c;R.mr.state!=='inactive'&&R.mr.stop
 function ui(on){$('#tx').style.display=on?'none':'';$('#recbar').style.display=on?'flex':'none';$('#bv').hidden=$('#ba').hidden=on}
 
 /* ---------- groups & channels ---------- */
-function newChatModal(type){const us=Object.keys(S.users).filter(u=>u!==S.me&&!S.users[u].renamedTo).sort(),isCh=type==='channel';
- $('#box').innerHTML=`<b>${isCh?'Новый канал':'Новая группа'}</b><input id="gt" placeholder="Название" maxlength="40">${isCh?'<div class="sub">В канале писать сможете только вы (и назначенные администраторы), остальные — только читают.</div>':''}${us.length?us.map(u=>`<label class="row" style="padding:4px"><input type="checkbox" style="width:auto" value="${esc(u)}">${esc(uname(u))}${bmark(u)} <span class="sub">@${esc(u)}</span></label>`).join(''):'<div class="sub">Пока нет других пользователей</div>'}<div style="display:flex;gap:8px"><button class="pri" id="gok">Создать</button><button id="gno">Отмена</button></div>`;$('#modal').hidden=false;
+function newChatModal(type){const us=contactList(),isCh=type==='channel';
+ $('#box').innerHTML=`<b>${isCh?'Новый канал':'Новая группа'}</b><input id="gt" placeholder="Название" maxlength="40">${isCh?'<div class="sub">В канале писать сможете только вы (и назначенные администраторы), остальные — только читают.</div>':''}${us.length?us.map(u=>`<label class="row" style="padding:4px"><input type="checkbox" style="width:auto" value="${esc(u)}">${esc(uname(u))}${bmark(u)} <span class="sub">@${esc(u)}</span></label>`).join(''):'<div class="sub">Пока нет контактов. Сначала напишите кому-нибудь личное сообщение или добавьте человека в контакты — тогда он появится здесь.</div>'}<div style="display:flex;gap:8px"><button class="pri" id="gok">Создать</button><button id="gno">Отмена</button></div>`;$('#modal').hidden=false;
  $('#gno').onclick=()=>$('#modal').hidden=true;
  $('#gok').onclick=async()=>{const t=$('#gt').value.trim(),m=[...document.querySelectorAll('#box input[type=checkbox]:checked')].map(i=>i.value);
   if(!t||(!isCh&&!m.length)){toast(isCh?'Введите название канала':'Нужны название и хотя бы один участник');return}
@@ -636,8 +727,8 @@ function newChatModal(type){const us=Object.keys(S.users).filter(u=>u!==S.me&&!S
   if(isCh)c.admins=[];
   try{await db.doc('chats/'+id).set(c);S.chats[id]=c;$('#modal').hidden=true;openChat(id)}catch(e){toast('Ошибка: '+e.code)}}}
 function addMembersModal(){const c=S.chats[S.cur];if(!c||(c.type!=='group'&&c.type!=='channel'))return;
- const us=Object.keys(S.users).filter(u=>u!==S.me&&!S.users[u].renamedTo&&!c.members.includes(u)).sort();
- $('#box').innerHTML=`<b>Добавить участников</b>${us.length?us.map(u=>`<label class="row" style="padding:4px"><input type="checkbox" style="width:auto" value="${esc(u)}">${esc(uname(u))}${bmark(u)} <span class="sub">@${esc(u)}</span></label>`).join(''):'<div class="sub">Все зарегистрированные уже в чате</div>'}<div style="display:flex;gap:8px"><button class="pri" id="amok">Добавить</button><button id="amno">Отмена</button></div>`;
+ const us=contactList().filter(u=>!c.members.includes(u));
+ $('#box').innerHTML=`<b>Добавить участников</b>${us.length?us.map(u=>`<label class="row" style="padding:4px"><input type="checkbox" style="width:auto" value="${esc(u)}">${esc(uname(u))}${bmark(u)} <span class="sub">@${esc(u)}</span></label>`).join(''):'<div class="sub">Все ваши контакты уже в этом чате</div>'}<div style="display:flex;gap:8px"><button class="pri" id="amok">Добавить</button><button id="amno">Отмена</button></div>`;
  $('#modal').hidden=false;$('#amno').onclick=()=>$('#modal').hidden=true;
  $('#amok').onclick=async()=>{const add=[...document.querySelectorAll('#box input[type=checkbox]:checked')].map(i=>i.value);
   if(!add.length){toast('Выберите хотя бы одного человека');return}
@@ -699,9 +790,19 @@ async function renameUsername(raw){
    через Firestore передаётся только «рукопожатие» (offer/answer/ICE).
    Документ звонка живёт в calls/<id> и удаляется сразу после разговора.
    ========================================================================= */
+/* STUN сам по себе не помогает, если оба собеседника сидят за "жёстким"
+   NAT (мобильный интернет, офисный Wi-Fi и т.п.) — тогда прямое P2P-соединение
+   не устанавливается вообще. TURN-сервер решает это, ретранслируя медиапоток
+   через себя. Ниже — публичный бесплатный TURN (openrelay.metered.ca) как
+   запасной вариант: он не требует денег и настройки, но общий и не даёт
+   гарантий по нагрузке. Для по-настоящему надёжных звонков в проде замените
+   его на свой TURN (Twilio/Xirsys/metered.ca платный тариф или свой coturn). */
 const ICE={iceServers:[
  {urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},
- {urls:'stun:stun.cloudflare.com:3478'}
+ {urls:'stun:stun.cloudflare.com:3478'},
+ {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
+ {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},
+ {urls:'turn:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}
 ],iceCandidatePoolSize:4};
 let CALL=null,RING=null,ringIv=null,durIv=null;
 const callsCol=()=>db.collection('calls');
@@ -736,7 +837,10 @@ function newPC(){const pc=new RTCPeerConnection(ICE);
  pc.onconnectionstatechange=()=>{if(!CALL||CALL.pc!==pc)return;
   const st=pc.connectionState;
   if(st==='connected'){CALL.connectedAt=CALL.connectedAt||Date.now();setCallStatus()}
-  else if(st==='disconnected')setCallStatus('связь прерывается…');
+  else if(st==='disconnected'){setCallStatus('связь прерывается…');
+   /* сеть моргнула (переключение Wi-Fi↔моб.интернет и т.п.) — пробуем
+      восстановить существующее соединение вместо немедленного разрыва */
+   try{pc.restartIce&&pc.restartIce()}catch(e){}}
   else if(st==='failed'){setCallStatus('не удалось соединиться');
    setTimeout(()=>{if(CALL&&CALL.pc===pc&&pc.connectionState==='failed'){toast('Связь не установилась — возможно, мешает сеть или NAT');endCall('failed')}},3000)}};
  return pc}
@@ -839,7 +943,7 @@ function showRing(id,d){RING={id,d};const u=resolveUser(d.from),x=S.users[u]||{}
  clearInterval(ringIv);ringBeep();ringIv=setInterval(ringBeep,1900);
  try{navigator.vibrate&&navigator.vibrate([400,300,400])}catch(e){}
  try{if(window.Notification&&Notification.permission==='granted'&&ls.g('ntf')!=='0')
-  new Notification(uname(u),{body:d.type==='video'?'🎥 Видеозвонок':'📞 Аудиозвонок'})}catch(e){}
+  new Notification(uname(u),{body:d.type==='video'?'🎥 Видеозвонок':'📞 Аудиозвонок',icon:'icons/icon-192.png',badge:'icons/icon-96.png',tag:'call-'+id,requireInteraction:true})}catch(e){}
  RING.to=setTimeout(()=>{if(RING&&RING.id===id)declineCall(id)},45000)}
 function stopRing(){clearInterval(ringIv);ringIv=null;if(RING)clearTimeout(RING.to);RING=null;$('#ringui').hidden=true}
 function watchCalls(){if(!callOk())return;
@@ -905,7 +1009,7 @@ document.addEventListener('click',async e=>{const t=e.target,c=t.closest('[data-
  const cb=t.closest('[data-call]');if(cb){e.stopPropagation();$('#modal').hidden=true;startCall(cb.dataset.call,cb.dataset.ctype||'audio');return}
  /* --- аккаунты --- */
  const adl=t.closest('[data-accdel]');if(adl){e.stopPropagation();const u=adl.dataset.accdel;
-  if(confirm('Убрать @'+u+' из списка аккаунтов на этом устройстве?')){ACC.del(u);if($('#auth').hidden===false)authAccs();else render()}return}
+  if(confirm('Убрать @'+u+' из списка аккаунтов на этом устройстве?')){ACC.del(u);if($('#authwrap').hidden===false)authAccs();else render()}return}
  const arw=t.closest('[data-acc]');if(arw){switchAccount(arw.dataset.acc);return}
  const alg=t.closest('[data-login]');if(alg){const u=alg.dataset.login,p=ACC.pass(u);
   $('#au').value=u;setMode('login');
@@ -961,7 +1065,7 @@ document.addEventListener('change',async e=>{const t=e.target;
  if(t.id==='wpf'){const f=t.files[0];t.value='';if(!f)return;try{let d=await resizeImage(f,1080,.72);if(d.length>1800000)d=await resizeImage(f,700,.6);ls.s('wallImg',d);ls.s('wallPreset','');applyWallpaper();render()}catch(x){toast('Не удалось загрузить обои')}return}
  if(t.id==='th'){ls.s('theme',t.value);t.value?document.documentElement.dataset.theme=t.value:delete document.documentElement.dataset.theme}
  if(t.id==='sd'){S.snd=t.checked;ls.s('snd',t.checked?'1':'0')}
- if(t.id==='nt'){if(t.checked){try{const p=await Notification.requestPermission();t.checked=p==='granted';ls.s('ntf',t.checked?'1':'0');if(!t.checked)toast('Уведомления заблокированы браузером')}catch(x){t.checked=false;toast('Уведомления недоступны в этом окне')}}else ls.s('ntf','0')}});
+ if(t.id==='nt'){if(t.checked){try{const p=await Notification.requestPermission();t.checked=p==='granted';ls.s('ntf',t.checked?'1':'0');if(!t.checked)toast('Уведомления заблокированы браузером');else await enablePush()}catch(x){t.checked=false;toast('Уведомления недоступны в этом окне')}}else{ls.s('ntf','0');await disablePush()}}});
 $('#q').oninput=e=>{S.q=e.target.value.trim();render()};
 document.addEventListener('input',e=>{if(e.target.id==='aq'){S.aq=e.target.value;const al=$('#alist');if(al)al.innerHTML=adminUsersHtml()}});
 $('#tx').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendText()}};
@@ -988,7 +1092,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(S.cur)
  L.addEventListener('click',e=>{if(S.lpChat){e.stopPropagation();e.preventDefault();setTimeout(()=>S.lpChat=false,150)}},true)}
 if(ls.g('theme'))document.documentElement.dataset.theme=ls.g('theme');
 
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(r=>swReg=r).catch(()=>{})})}
 
 (async()=>{
  try{firebase.initializeApp(window.FIREBASE_CONFIG);db=firebase.firestore()}
@@ -1006,12 +1110,12 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.s
    ls.d('addAcc');await boot(c.user);return}
   catch(e){const bad=(()=>{try{return JSON.parse(sw).u}catch(x){return null}})();
    if(bad){ACC.del(bad);$('#au').value=bad}
-   setMode('login');$('#ae').textContent='Не удалось войти в этот аккаунт — введите пароль заново';$('#auth').hidden=false;return}}
+   $('#authwrap').hidden=false;showAuthForm('login');$('#ae').textContent='Не удалось войти в этот аккаунт — введите пароль заново';return}}
 
  /* режим «добавить аккаунт»: показываем форму входа, сессию не трогаем до успеха */
  if(ls.g('addAcc')==='1'){
   await firebase.auth().signOut().catch(()=>{});
-  setMode('login');$('#auth').hidden=false;return}
+  $('#authwrap').hidden=false;showAuthForm('login');return}
 
- let un;un=firebase.auth().onAuthStateChanged(async u=>{un&&un();if(u&&u.email){try{await boot(u)}catch(e){$('#auth').hidden=false}}else $('#auth').hidden=false})})();
+ let un;un=firebase.auth().onAuthStateChanged(async u=>{un&&un();if(u&&u.email){try{await boot(u)}catch(e){$('#authwrap').hidden=false;showAuthForm('login')}}else{$('#authwrap').hidden=false;(savedUser||ACC.list().length)?showAuthForm('login'):showAuthLand()}})})();
 </script></body></html>

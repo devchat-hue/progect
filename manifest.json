@@ -1,14 +1,14 @@
 {
-  "name": "Анонимный мессенджер",
-  "short_name": "Мессенджер",
+  "name": "Shadow — говори свободно",
+  "short_name": "Shadow",
   "description": "Анонимный мессенджер без номера телефона — только @username",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "any",
-  "background_color": "#1a1a1e",
-  "theme_color": "#1a1a1e",
+  "background_color": "#0b0b12",
+  "theme_color": "#0b0b12",
   "lang": "ru",
   "dir": "ltr",
   "icons": [
