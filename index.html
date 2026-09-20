@@ -45,18 +45,52 @@ main{display:flex;flex-direction:column;min-height:0;background:var(--wall);posi
 .m .n{color:var(--acc);font-size:12px;font-weight:600;display:flex;align-items:center;gap:2px}.m .t{font-size:11px;color:var(--sub);text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:2px}
 .m.flash{animation:fl .9s}@keyframes fl{0%,100%{box-shadow:none}30%{box-shadow:0 0 0 3px var(--acc)}}
 audio{height:36px;max-width:100%}
-/* --- бот «Расписание» --- */
-#botbar{display:flex;gap:6px;padding:8px 10px 0;overflow-x:auto;scrollbar-width:none;background:var(--glass);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%)}
-#botbar::-webkit-scrollbar{display:none}
-#botbar button{flex:none;background:var(--hov);border:1px solid var(--line);border-radius:16px;padding:7px 12px;font-size:13.5px;white-space:nowrap}
-#botbar button:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
-.m.botmsg{max-width:min(92%,520px)}
-.m.botmsg .les{display:flex;gap:8px;padding:4px 0;border-top:1px solid var(--glassb)}
-.m.botmsg .les:first-of-type{border-top:0}
-.m.botmsg .num{flex:none;width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font-size:12px;display:grid;place-items:center;margin-top:2px}
-.m.botmsg .les b{display:block}
-.m.botmsg .les .sub{font-size:12.5px}
-.m.botmsg h4{margin:0 0 4px;font-size:15px}
+/* --- звонки --- */
+#callui{position:fixed;inset:0;z-index:20;background:#0b0b0f;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px))}
+#callui[hidden]{display:none}
+#rv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0b0b0f;display:none}
+#rv.on{display:block}
+#lv{position:absolute;right:14px;top:calc(14px + env(safe-area-inset-top,0px));width:104px;height:150px;object-fit:cover;border-radius:14px;border:2px solid #ffffff3d;background:#000;display:none;z-index:2}
+#lv.on{display:block}
+#cinfo{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;margin:auto 0;text-align:center;text-shadow:0 1px 8px #000a}
+#cinfo .sub{color:#c9c9d4}
+#cinfo.mini{position:absolute;top:calc(18px + env(safe-area-inset-top,0px));left:16px;align-items:flex-start;margin:0;text-align:left}
+#cinfo.mini #cav{display:none}
+#cav .av{width:96px;height:96px;font-size:36px}
+#cbtns,#cin{position:relative;z-index:3;display:flex;gap:18px;margin-top:auto}
+#cin{position:absolute;bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+.cb{width:60px;height:60px;border-radius:50%;background:#ffffff26;backdrop-filter:blur(10px);font-size:24px;display:grid;place-items:center;color:#fff}
+.cb.off{background:#fff;color:#111}
+.cb.red{background:#e5484d}.cb.green{background:#31c55e}
+#callui.ring #cbtns{display:none}
+.m.call .t{margin-top:2px}
+/* --- звонки --- */
+#callui{position:fixed;inset:0;z-index:20;background:#0b0b10;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(26px + env(safe-area-inset-bottom,0px))}
+#callui[hidden],#ringui[hidden]{display:none}
+#rv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0b0b10;display:none}
+#callui.hasvideo #rv{display:block}
+#callui.hasvideo #cpeer{display:none}
+#lv{position:absolute;right:14px;top:calc(14px + env(safe-area-inset-top,0px));width:104px;height:140px;object-fit:cover;border-radius:16px;border:2px solid #ffffff40;background:#000;z-index:2;display:none}
+#callui.hasme #lv{display:block}
+#cpeer{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+#cpeer .av{width:120px;height:120px;font-size:44px}
+#cname{font-size:21px;font-weight:600}
+#cstat{color:#ffffffb3;font-size:14px}
+#cbtns{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;gap:18px;z-index:3}
+.cb{width:62px;height:62px;border-radius:50%;background:#ffffff26;font-size:25px;color:#fff;display:grid;place-items:center;flex:none}
+.cb.off{background:#fff;color:#111}
+.cb.end{background:#e5484d}
+.cb.acc{background:#31c55e}
+.cb[hidden]{display:none}
+#ringui{position:fixed;inset:0;z-index:21;background:#000000cc;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:grid;place-items:center;color:#fff;
+ padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(26px + env(safe-area-inset-bottom,0px))}
+#ringbox{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+#ringbox .av{width:110px;height:110px;font-size:40px;animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #ffffff33}50%{box-shadow:0 0 0 18px #ffffff00}}
+#rname{font-size:21px;font-weight:600}
+#rkind{color:#ffffffb3;font-size:14px}
 /* --- несколько аккаунтов --- */
 .accrow{display:flex;gap:10px;align-items:center;padding:7px 8px;border-radius:12px;cursor:pointer}
 .accrow:hover{background:var(--hov)}
@@ -145,17 +179,35 @@ audio{height:36px;max-width:100%}
   <nav id="nav"><button data-t="chats">Чаты</button><button data-t="contacts">Контакты</button><button data-t="settings">Настройки</button><button data-t="admin" id="navadmin" hidden>Админ</button></nav></aside>
  <main><div id="empty">Выберите чат</div>
   <section id="cv" hidden>
-   <div id="hd"><button id="back">‹</button><div class="hav" id="hav"></div><div class="mid"><b id="htl"></b><span class="sub" id="hsb"></span></div><button class="ic" id="addm" title="Добавить участников" hidden>➕</button><button class="ic" id="hmenu" title="Меню чата" hidden>⋮</button></div>
+   <div id="hd"><button id="back">‹</button><div class="hav" id="hav"></div><div class="mid"><b id="htl"></b><span class="sub" id="hsb"></span></div><button class="ic" id="bca" title="Аудиозвонок" hidden>📞</button><button class="ic" id="bcv" title="Видеозвонок" hidden>🎥</button><button class="ic" id="addm" title="Добавить участников" hidden>➕</button><button class="ic" id="hmenu" title="Меню чата" hidden>⋮</button></div>
    <div id="msgs"></div>
    <div id="replybar"><div class="rp"><b id="rpn"></b><span id="rpt"></span></div><button class="ic" id="rpx">✕</button></div>
    <div id="robar" hidden></div>
-   <div id="botbar" hidden>
-    <button data-bot="today">📅 Сегодня</button><button data-bot="tomorrow">📆 Завтра</button><button data-bot="week">🗓 Неделя</button><button data-bot="next">⏭ Следующая пара</button><button data-bot="sync">🔄 Обновить с сайта</button><button data-bot="import">📥 Вставить расписание</button><button data-bot="edit">✏️ Редактировать</button><button data-bot="site">🌐 Сайт МУИВ</button>
-   </div>
    <div id="cmp"><textarea id="tx" rows="1" placeholder="Сообщение" autocomplete="off"></textarea><div id="recbar"><i></i><span id="rt">0:00</span><button id="rc">✕</button></div>
     <button class="ic" id="ba" title="Прикрепить фото / видео / файл">📎</button><button class="ic" id="bv" title="Голосовое">🎤</button><button class="ic" id="bs" title="Отправить">➤</button></div>
   </section></main>
 </div>
+<div id="callui" hidden>
+ <video id="rv" playsinline autoplay></video>
+ <video id="lv" playsinline autoplay muted></video>
+ <div id="cinfo"><div id="cav"></div><b id="cname"></b><span class="sub" id="cstate"></span></div>
+ <div id="cbtns">
+  <button class="cb" id="cmic" title="Микрофон">🎤</button>
+  <button class="cb" id="ccam" title="Камера" hidden>🎥</button>
+  <button class="cb" id="cflip" title="Сменить камеру" hidden>🔄</button>
+  <button class="cb red" id="chang" title="Завершить">📵</button>
+ </div>
+ <div id="cin" hidden><button class="cb green" id="cacc" title="Ответить">📞</button><button class="cb red" id="crej" title="Отклонить">📵</button></div>
+</div>
+<div id="callui" hidden>
+ <video id="rv" autoplay playsinline></video><video id="lv" autoplay playsinline muted></video>
+ <div id="cpeer"><div id="cav"></div><div id="cname"></div><div id="cstat"></div></div>
+ <div id="cbtns"><button class="cb" id="cmic" title="Микрофон">🎤</button><button class="cb" id="ccam" title="Камера" hidden>🎥</button><button class="cb end" id="cend" title="Завершить">📴</button></div>
+</div>
+<div id="ringui" hidden><div id="ringbox">
+ <div id="rav"></div><div id="rname"></div><div id="rkind"></div>
+ <div style="display:flex;gap:24px;margin-top:14px"><button class="cb acc" id="racc" title="Ответить">📞</button><button class="cb end" id="rdec" title="Отклонить">📴</button></div>
+</div></div>
 <div id="modal" hidden><div id="box"></div></div><div id="toast"></div><input type="file" id="avf" accept="image/*" hidden><input type="file" id="atf" hidden><input type="file" id="wpf" accept="image/*" hidden>
 <div id="mm" hidden></div>
 <div id="pk" hidden><button data-e="👍">👍</button><button data-e="❤️">❤️</button><button data-e="😂">😂</button><button data-e="😮">😮</button><button data-e="😢">😢</button><button data-e="🔥">🔥</button></div>
@@ -196,7 +248,7 @@ function forgetAccount(u){ACC.del(u);
 function accRowsHtml(){const l=ACC.list();
  return l.map(a=>{const cur=a.u===S.me,x=S.users[a.u]||{};
   return `<div class="accrow ${cur?'cur':''}" data-acc="${esc(a.u)}">${av(a.u,x.name||a.n)}<div class="mid"><b>${esc(x.name||a.n||a.u)}${cur?bmark(a.u):''}</b><div class="sub">@${esc(a.u)}${cur?' · активен':''}</div></div>${cur?'<span>✓</span>':`<button class="ic" data-accdel="${esc(a.u)}" title="Убрать из списка">✕</button>`}</div>`}).join('')}
-const S={me:ls.g('me'),users:{},chats:{},cur:null,tab:'chats',q:'',un:{},t0:Date.now(),snd:ls.g('snd')!=='0',reads:JSON.parse(ls.g('reads')||'{}'),shown:new Set(),replyTo:null,msgs:{},myContacts:[],adminMode:false,adminChats:{},adminSub:'users',aq:'',blocked:[],hid:{},pinned:[],bot:{msgs:[],data:null,busy:false,autoDay:null}};
+const S={me:ls.g('me'),users:{},chats:{},cur:null,tab:'chats',q:'',un:{},t0:Date.now(),snd:ls.g('snd')!=='0',reads:JSON.parse(ls.g('reads')||'{}'),shown:new Set(),replyTo:null,msgs:{},myContacts:[],adminMode:false,adminChats:{},adminSub:'users',aq:'',blocked:[],hid:{},pinned:[]};
 let db,msgUn=null,Q=Promise.resolve(),R=null;
 const COL=['#e17076','#7bc862','#e5ca77','#65aadd','#a695e7','#ee7aae','#6ec9cb','#faa774'];
 const col=s=>COL[[...s].reduce((a,c)=>a+c.charCodeAt(0),0)%8];
@@ -345,13 +397,13 @@ function enter(){if(entered)return;entered=true;
  $('#navadmin').hidden=!isCreator(S.me);
  applyWallpaper();startPresence();
  db.collection('users').onSnapshot(s=>{S.users={};s.docs.forEach(d=>{const x=d.data();if(x&&x.username)S.users[d.id]=x});renderSoon();grantNayk()},e=>toast('Ошибка: '+e.code));
- loadHidden();botLoad();
+ loadHidden();watchCalls();
  db.doc('users/'+S.me+'/priv/contacts').onSnapshot(s=>{S.myContacts=(s.exists&&s.data().list)||[];render()},()=>{});
  db.doc('users/'+S.me+'/priv/blocked').onSnapshot(s=>{S.blocked=(s.exists&&s.data().list)||[];render();if(S.cur)head()},()=>{});
  db.doc('users/'+S.me+'/priv/pinned').onSnapshot(s=>{S.pinned=(s.exists&&s.data().list)||[];render()},()=>{});
  db.collection('chats').where('uids','array-contains',S.uid).onSnapshot(s=>{
   S.chats={};s.docs.forEach(d=>S.chats[d.id]=d.data());
-  if(S.cur&&S.cur!==BOT_ID&&!S.adminMode&&!S.chats[S.cur]){msgUn&&msgUn();msgUn=null;S.cur=null;$('#cv').hidden=true;$('#empty').hidden=false;$('#app').classList.remove('open')}
+  if(S.cur&&!S.adminMode&&!S.chats[S.cur]){msgUn&&msgUn();msgUn=null;S.cur=null;$('#cv').hidden=true;$('#empty').hidden=false;$('#app').classList.remove('open')}
   s.docChanges().forEach(ch=>{if(ch.type==='removed')return;const c=ch.doc.data(),id=ch.doc.id;
    if(c.last&&c.last.from!==S.me&&c.last.t>S.t0&&!S.seen?.[id+c.last.t]&&!isBlocked(c.last.from)){(S.seen=S.seen||{})[id+c.last.t]=1;
     if(S.cur===id&&!document.hidden){markRead(id)}else{S.un[id]=(S.un[id]||0)+1;badge();beep();
@@ -404,8 +456,7 @@ function render(){if($('#app').hidden)return;
  if(q){let hit=S.users[q]?resolveUser(q):null;if(hit===S.me)hit=null;
   h=hit&&S.users[hit]?userRow(hit,1):'<div class="sub" style="padding:20px;text-align:center">Пользователь не найден.<br>Введите точный @username целиком.</div>'}
  else if(S.tab==='chats'){const ids=Object.keys(S.chats).filter(i=>(S.chats[i].last||S.chats[i].by===S.me)&&!chatHidden(i)).sort((a,b)=>{const pa=isPinned(a),pb=isPinned(b);if(pa!==pb)return pa?-1:1;return (S.chats[b].lastAt||0)-(S.chats[a].lastAt||0)});
-  h=ids.length?ids.map(chatRow).join(''):'<div class="sub" style="padding:20px;text-align:center">Чатов пока нет.<br>Найдите человека по точному @username в поиске.</div>';
-  if(hasBot())h=botRow()+h}
+  h=ids.length?ids.map(chatRow).join(''):'<div class="sub" style="padding:20px;text-align:center">Чатов пока нет.<br>Найдите человека по точному @username в поиске.</div>'}
  else if(S.tab==='contacts'){const cs=contactList();
   h=`<div class="row" id="ng"><div class="av" style="background:var(--acc)">👥</div><b>Создать группу</b></div><div class="row" id="nc"><div class="av" style="background:var(--acc)">📢</div><b>Создать канал</b></div>`+
    (cs.length?`<div class="sub" style="padding:10px 12px 4px">${cs.length} контакт(ов) · ${cs.filter(isOnline).length} в сети</div>`+cs.map(u=>userRow(u)).join(''):'<div class="sub" style="padding:20px;text-align:center">Контактов нет.<br>Найдите человека по точному @username — он появится здесь, как только вы ему напишете.</div>')}
@@ -452,7 +503,7 @@ async function openDM(uRaw){const u=resolveUser(uRaw),tu=S.users[u];if(!tu||!tu.
 function head(){const id=S.cur,c=S.adminMode?(S.adminChats[id]||S.chats[id]):S.chats[id];if(!c)return;
  if(S.adminMode){const label=isGroupLike(c)?c.title:(c.members||[]).map(m=>'@'+m).join(' ↔ ');
   $('#hav').innerHTML=av('#'+label,label);
-  $('#htl').textContent=label;$('#hsb').textContent='Просмотр администратора · '+(c.members||[]).length+' участ.';$('#addm').hidden=true;$('#hmenu').hidden=true;
+  $('#htl').textContent=label;$('#hsb').textContent='Просмотр администратора · '+(c.members||[]).length+' участ.';$('#addm').hidden=true;$('#hmenu').hidden=true;$('#bca').hidden=true;$('#bcv').hidden=true;
   $('#cmp').hidden=true;$('#robar').hidden=false;$('#robar').textContent='Режим администратора: только просмотр чужого чата';return}
  const isG=isGroupLike(c),isCh=c.type==='channel',ot=isG?null:other(c),t=isG?c.title:uname(ot),canW=canWrite(c);
  $('#hav').innerHTML=isG?av('#'+t,t):avU(ot);
@@ -460,6 +511,8 @@ function head(){const id=S.cur,c=S.adminMode?(S.adminChats[id]||S.chats[id]):S.c
  if(isG)$('#hsb').textContent=(isCh?'Канал · ':'')+c.members.length+' участн.: '+c.members.map(uname).join(', ');
  else $('#hsb').innerHTML=statusHtml(ot);
  $('#addm').hidden=!(c.type==='group'||(isCh&&canW));$('#hmenu').hidden=false;
+ const canCall=!isG&&!isBlocked(ot)&&callOk()&&!!(S.users[ot]||{}).owner;
+ $('#bca').hidden=!canCall;$('#bcv').hidden=!canCall;
  const bl=!isG&&isBlocked(ot);
  $('#cmp').hidden=!canW||bl;
  if(bl){$('#robar').hidden=false;$('#robar').innerHTML='Пользователь в чёрном списке · <button style="color:var(--acc)" data-unblock="'+esc(ot)+'">Разблокировать</button>';clearReply()}
@@ -470,7 +523,7 @@ function setReply(id){const m=S.msgs[id];if(!m)return;
  const prev=m.type==='text'?(m.text||'').slice(0,120):m.type==='voice'?'🎤 Голосовое':m.type==='circle'?'🎬 Видео':m.type==='image'?'🖼 Фото':m.type==='video'?'🎬 Видео':m.type==='file'?'📄 '+(m.name||'Файл'):'';
  S.replyTo={id,from:m.from,text:prev};$('#rpn').innerHTML=dispName(m.from);$('#rpt').textContent=prev;$('#replybar').style.display='flex';$('#tx').focus()}
 function scrollToMsg(id){const el=document.getElementById('m_'+id);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),900)}}
-function openChat(id){if(id===BOT_ID)return openBot();leaveBot();if((S.hid||{})[id]){delete S.hid[id];saveHidden()}S.cur=id;S.adminMode=false;markRead(id);clearReply();$('#empty').hidden=true;$('#cv').hidden=false;$('#app').classList.add('open');
+function openChat(id){if((S.hid||{})[id]){delete S.hid[id];saveHidden()}S.cur=id;S.adminMode=false;markRead(id);clearReply();$('#empty').hidden=true;$('#cv').hidden=false;$('#app').classList.add('open');
  $('#msgs').innerHTML='';delete $('#msgs').dataset.init;S.shown=new Set();S.msgs={};head();render();msgUn&&msgUn();
  msgUn=db.collection('chats/'+id+'/messages').orderBy('t','desc').limit(100).onSnapshot(s=>{
   if(S.cur!==id)return;const box=$('#msgs'),near=box.scrollHeight-box.scrollTop-box.clientHeight<120;
@@ -480,7 +533,7 @@ function openChat(id){if(id===BOT_ID)return openBot();leaveBot();if((S.hid||{})[
 
 /* ---------- admin (owner) view of any chat ---------- */
 async function loadAdminChats(){try{const s=await db.collection('chats').get();S.adminChats={};s.docs.forEach(d=>S.adminChats[d.id]=d.data());render()}catch(e){toast('Ошибка доступа: '+(e.code||e.message))}}
-function adminOpenChat(id){const c=S.adminChats[id];if(!c)return;leaveBot();S.cur=id;S.chats[id]=c;S.adminMode=true;clearReply();
+function adminOpenChat(id){const c=S.adminChats[id];if(!c)return;S.cur=id;S.chats[id]=c;S.adminMode=true;clearReply();
  $('#empty').hidden=true;$('#cv').hidden=false;$('#app').classList.add('open');
  $('#msgs').innerHTML='';S.shown=new Set();S.msgs={};head();msgUn&&msgUn();
  msgUn=db.collection('chats/'+id+'/messages').orderBy('t','desc').limit(100).onSnapshot(s=>{
@@ -522,7 +575,6 @@ function send(m){const id=S.cur;if(!id)return;const cc=S.chats[id];
   await db.doc('chats/'+id).update({last:{from:S.me,t,k:m.type,text:m.type==='text'?m.text:''},lastAt:t})}
  catch(e){toast(e.code==='permission-denied'?'Сообщение не доставлено: пользователь ограничил круг общения':e.code==='quota_exceeded'?'Хранилище заполнено (лимит документов)':'Не отправлено: '+(e.code||e.message))}})}
 function sendText(){let v=$('#tx').value.trim();if(!v)return;$('#tx').value='';$('#tx').style.height='';
- if(S.cur===BOT_ID){botAsk(v);return}
  if(v==='/shrug'){send({type:'text',text:'¯\\_(ツ)_/¯'});return}
  if(v==='/party'){send({type:'text',text:'🎉 Вечеринка! 🎉'});confetti();return}
  send({type:'text',text:v.slice(0,4000)})}
@@ -596,7 +648,7 @@ function channelAdminsModal(id){const c=S.chats[id];if(!c||c.type!=='channel'||c
 /* ---------- profiles ---------- */
 function openUserProfile(uRaw){const u=resolveUser(uRaw),x=S.users[u];if(!x){toast('Пользователь не найден');return}
  const canDm=u!==S.me;
- $('#box').innerHTML=`<div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px"><span class="avw">${av(u,x.name,'avbig')}${isOnline(u)?'<i class="odot"></i>':''}</span><div><b style="font-size:17px">${esc(x.name||u)}${bmark(u)}</b></div><div class="sub">@${esc(u)}</div><div class="sub">${statusHtml(u)}</div>${isScam(u)?'<div class="warn">Аккаунт помечен администрацией как <b>SCAM</b>. Будьте осторожны: не переводите деньги и не передавайте данные.</div>':''}${canDm&&!isBlocked(u)?'<button class="pri" id="pfdm">Написать сообщение</button>':''}${canDm?`<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center"><button class="abtn" data-block="${esc(u)}">${isBlocked(u)?'✅ Разблокировать':'🚫 В чёрный список'}</button>${S.chats[dmId(S.uid,x.owner)]?`<button class="abtn" data-delchat="${esc(dmId(S.uid,x.owner))}" style="color:#e5484d">🗑 Удалить переписку</button>`:''}</div>`:''}${isCreator(S.me)&&canDm?`<div style="display:flex;gap:6px"><button class="abtn ${isVerified(u)?'on':''}" data-vf="${esc(u)}">✓ галочка</button><button class="abtn sc ${x.scam?'on':''}" data-scam="${esc(u)}">SCAM</button></div>`:''}<button id="pfx">Закрыть</button></div>`;
+ $('#box').innerHTML=`<div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px"><span class="avw">${av(u,x.name,'avbig')}${isOnline(u)?'<i class="odot"></i>':''}</span><div><b style="font-size:17px">${esc(x.name||u)}${bmark(u)}</b></div><div class="sub">@${esc(u)}</div><div class="sub">${statusHtml(u)}</div>${isScam(u)?'<div class="warn">Аккаунт помечен администрацией как <b>SCAM</b>. Будьте осторожны: не переводите деньги и не передавайте данные.</div>':''}${canDm&&!isBlocked(u)?'<button class="pri" id="pfdm">Написать сообщение</button>':''}${canDm&&!isBlocked(u)&&callOk()&&x.owner?`<div style="display:flex;gap:6px"><button class="abtn" data-call="${esc(u)}" data-ctype="audio">📞 Позвонить</button><button class="abtn" data-call="${esc(u)}" data-ctype="video">🎥 Видеозвонок</button></div>`:''}${canDm?`<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center"><button class="abtn" data-block="${esc(u)}">${isBlocked(u)?'✅ Разблокировать':'🚫 В чёрный список'}</button>${S.chats[dmId(S.uid,x.owner)]?`<button class="abtn" data-delchat="${esc(dmId(S.uid,x.owner))}" style="color:#e5484d">🗑 Удалить переписку</button>`:''}</div>`:''}${isCreator(S.me)&&canDm?`<div style="display:flex;gap:6px"><button class="abtn ${isVerified(u)?'on':''}" data-vf="${esc(u)}">✓ галочка</button><button class="abtn sc ${x.scam?'on':''}" data-scam="${esc(u)}">SCAM</button></div>`:''}<button id="pfx">Закрыть</button></div>`;
  $('#modal').hidden=false;
  if(canDm)$('#pfdm').onclick=()=>{$('#modal').hidden=true;openDM(u)};
  $('#pfx').onclick=()=>$('#modal').hidden=true}
@@ -634,204 +686,180 @@ async function renameUsername(raw){
   toast(M[k]||'Ошибка: '+(k||x.message))}}
 
 /* =========================================================================
-   БОТ «РАСПИСАНИЕ КОЛЛЕДЖА» — виден только @temqua.
-   Это локальный чат-бот: чат не хранится в Firestore, а само расписание
-   лежит в приватном документе users/<me>/priv/schedule, поэтому
-   синхронизируется между вашими устройствами.
+   ЗВОНКИ — аудио и видео, WebRTC. Медиа идут напрямую между устройствами,
+   через Firestore передаётся только «рукопожатие» (offer/answer/ICE).
+   Документ звонка живёт в calls/<id> и удаляется сразу после разговора.
    ========================================================================= */
-const BOT_ID='bot_rasp';
-const BOT_SITE='https://www.muiv.ru/studentu/spo/raspisanie/';
-const hasBot=()=>isCreator(S.me);
-const DOW=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
-const DOWS=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-const cap=s=>s?s[0].toUpperCase()+s.slice(1):s;
-const dkey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-const dadd=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
-const dfmt=d=>d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+const ICE={iceServers:[
+ {urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},
+ {urls:'stun:stun.cloudflare.com:3478'}
+],iceCandidatePoolSize:4};
+let CALL=null,RING=null,ringIv=null,durIv=null;
+const callsCol=()=>db.collection('calls');
+const callOk=()=>!!(window.RTCPeerConnection&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+const mediaWanted=t=>t==='video'?{audio:true,video:{width:{ideal:640},height:{ideal:480},facingMode:'user'}}:{audio:true};
+const durTxt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
 
-function botLoad(){if(!hasBot())return;
- db.doc('users/'+S.me+'/priv/schedule').onSnapshot(s=>{
-  S.bot.data=(s.exists&&s.data())||null;
-  if(S.cur===BOT_ID)renderBot()},()=>{})}
-async function botSave(patch){const cur=S.bot.data||{};const next={...cur,...patch,upd:Date.now()};
- S.bot.data=next;
- try{await db.doc('users/'+S.me+'/priv/schedule').set(next)}
- catch(e){toast('Не удалось сохранить расписание: '+(e.code||e.message))}}
+/* рингтон звучит даже если звук сообщений выключен */
+function ringBeep(){try{const a=new AudioContext();[0,.28].forEach(d=>{const o=a.createOscillator(),g=a.createGain();
+ o.connect(g);g.connect(a.destination);o.type='sine';o.frequency.value=d?660:520;
+ g.gain.setValueAtTime(.0001,a.currentTime+d);g.gain.exponentialRampToValueAtTime(.14,a.currentTime+d+.02);
+ g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+d+.24);o.start(a.currentTime+d);o.stop(a.currentTime+d+.26)})}catch(e){}}
+function setCallStatus(txt){const e=$('#cstat');if(!e)return;
+ if(txt){e.textContent=txt;return}
+ if(CALL&&CALL.connectedAt)e.textContent=durTxt(Math.round((Date.now()-CALL.connectedAt)/1000));}
+function openCallUI(){const u=CALL.peer,x=S.users[u]||{};
+ $('#cav').innerHTML=av(u,x.name||u);
+ $('#cname').innerHTML=dispName(u);
+ $('#callui').hidden=false;
+ $('#callui').classList.remove('hasvideo');
+ $('#ccam').hidden=CALL.type!=='video';
+ $('#cmic').textContent='🎤';$('#cmic').classList.remove('off');
+ $('#ccam').textContent='🎥';$('#ccam').classList.remove('off');
+ if(CALL.type==='video'){$('#lv').srcObject=CALL.local;$('#callui').classList.add('hasme')}
+ else $('#callui').classList.remove('hasme');
+ clearInterval(durIv);durIv=setInterval(()=>{if(CALL&&CALL.connectedAt)setCallStatus()},1000);
+ try{document.documentElement.requestFullscreen&&0}catch(e){}}
+function newPC(){const pc=new RTCPeerConnection(ICE);
+ pc.ontrack=e=>{if(!CALL)return;
+  const rs=CALL.remote||(CALL.remote=new MediaStream());
+  (e.streams[0]?e.streams[0].getTracks():[e.track]).forEach(t=>{if(!rs.getTrackById(t.id))rs.addTrack(t)});
+  $('#rv').srcObject=rs;
+  if(rs.getVideoTracks().length)$('#callui').classList.add('hasvideo');
+  $('#rv').play().catch(()=>{})};
+ pc.onconnectionstatechange=()=>{if(!CALL||CALL.pc!==pc)return;
+  const st=pc.connectionState;
+  if(st==='connected'){CALL.connectedAt=CALL.connectedAt||Date.now();setCallStatus()}
+  else if(st==='disconnected')setCallStatus('связь прерывается…');
+  else if(st==='failed'){setCallStatus('не удалось соединиться');
+   setTimeout(()=>{if(CALL&&CALL.pc===pc&&pc.connectionState==='failed'){toast('Связь не установилась — возможно, мешает сеть или NAT');endCall('failed')}},3000)}};
+ return pc}
 
-/* --- какие пары в конкретный день --- */
-function lessonsFor(d){const D=S.bot.data||{};const k=dkey(d);
- if(D.days&&D.days[k])return D.days[k];
- const w=(D.week||{})[String(d.getDay())];
- return w||null}
-function lessonsHtml(list){return list.map((l,i)=>
- `<div class="les"><span class="num">${i+1}</span><div><b>${esc(l.s||'—')}</b>${l.t?`<div class="sub">🕒 ${esc(l.t)}</div>`:''}${l.r?`<div class="sub">📍 ${esc(l.r)}</div>`:''}${l.p?`<div class="sub">👤 ${esc(l.p)}</div>`:''}</div></div>`).join('')}
-function dayHtml(d){const L=lessonsFor(d),ttl=`<h4>${cap(DOW[d.getDay()])}, ${dfmt(d)}</h4>`;
- if(!L)return ttl+'Расписание на этот день ещё не заведено.<br><button class="lnk" data-bota="edit" style="color:var(--acc)">✏️ Заполнить неделю</button>';
- if(!L.length)return ttl+'🎉 Пар нет, выходной.';
- return ttl+lessonsHtml(L)+`<div class="sub" style="margin-top:6px">Всего пар: ${L.length}</div>`}
-function weekHtml(from){let h='<h4>Расписание на неделю</h4>',n=0;
- for(let i=0;i<7;i++){const d=dadd(from,i),L=lessonsFor(d);
-  if(!L||!L.length)continue;n++;
-  h+=`<div style="margin-top:8px"><b>${DOWS[d.getDay()]}, ${dfmt(d)}</b>${lessonsHtml(L)}</div>`}
- return n?h:'<h4>Расписание на неделю</h4>Пар не найдено. Заполните неделю через «✏️ Редактировать».'}
-function nextLessonHtml(){const now=new Date();
- for(let i=0;i<8;i++){const d=dadd(now,i),L=lessonsFor(d)||[];
-  for(const l of L){const m=String(l.t||'').match(/(\d{1,2})[:.](\d{2})/);if(!m)continue;
-   const st=new Date(d.getFullYear(),d.getMonth(),d.getDate(),+m[1],+m[2]);
-   if(st>now){const mins=Math.round((st-now)/60000),hh=Math.floor(mins/60);
-    return `<h4>Следующая пара</h4>${lessonsHtml([l])}<div class="sub" style="margin-top:6px">${i===0?'сегодня':i===1?'завтра':DOWS[d.getDay()]+', '+dfmt(d)} · через ${hh?hh+' ч ':''}${mins%60} мин</div>`}}}
- return '<h4>Следующая пара</h4>Ближайших пар в расписании нет.'}
+async function startCall(peerRaw,type){
+ if(CALL||RING){toast('Звонок уже идёт');return}
+ if(!callOk()){toast('Этот браузер не умеет звонить');return}
+ const u=resolveUser(peerRaw),x=S.users[u];
+ if(!x||!x.owner){toast('Пользователь не найден');return}
+ if(isBlocked(u)){toast('Пользователь в чёрном списке');return}
+ if(!isOnline(u)&&!confirm('@'+u+' сейчас не в сети. Всё равно позвонить?'))return;
+ let stream;
+ try{stream=await navigator.mediaDevices.getUserMedia(mediaWanted(type))}
+ catch(e){toast(type==='video'?'Нет доступа к камере и микрофону':'Нет доступа к микрофону');return}
+ const id='call_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+ CALL={id,role:'caller',type,peer:u,local:stream,unsub:[],pend:[],ready:false};
+ openCallUI();setCallStatus('вызываю…');
+ const pc=CALL.pc=newPC(),ref=callsCol().doc(id);
+ stream.getTracks().forEach(t=>pc.addTrack(t,stream));
+ pc.onicecandidate=e=>{if(!e.candidate||!CALL)return;const c=e.candidate.toJSON();
+  CALL.ready?ref.collection('a').add(c).catch(()=>{}):CALL.pend.push(c)};
+ try{
+  const offer=await pc.createOffer();await pc.setLocalDescription(offer);
+  await ref.set({from:S.me,to:u,fromUid:S.uid,toUid:x.owner,uids:[S.uid,x.owner],type,state:'ringing',t:Date.now(),offer:{type:offer.type,sdp:offer.sdp}});
+  CALL.ready=true;CALL.pend.splice(0).forEach(c=>ref.collection('a').add(c).catch(()=>{}));
+ }catch(e){toast('Не удалось начать звонок: '+(e.code||e.message));endCall('error');return}
+ CALL.unsub.push(ref.onSnapshot(async snap=>{if(!CALL||CALL.id!==id)return;
+  const d=snap.data();
+  if(!d){endCall('remote');return}
+  if(d.state==='declined'){toast('@'+u+' отклонил звонок');endCall('remote');return}
+  if(d.state==='ended'){endCall('remote');return}
+  if(d.answer&&CALL.pc.signalingState==='have-local-offer'){
+   try{await CALL.pc.setRemoteDescription(new RTCSessionDescription(d.answer));
+    CALL.connectedAt=CALL.connectedAt||Date.now();setCallStatus()}catch(e){}}},()=>{}));
+ CALL.unsub.push(ref.collection('b').onSnapshot(s=>{s.docChanges().forEach(c=>{
+  if(c.type==='added'&&CALL&&CALL.id===id)CALL.pc.addIceCandidate(new RTCIceCandidate(c.doc.data())).catch(()=>{})})},()=>{}));
+ CALL.noAnswer=setTimeout(()=>{if(CALL&&CALL.id===id&&!CALL.connectedAt){toast('@'+u+' не отвечает');endCall('timeout')}},45000)}
 
-/* --- сообщения бота --- */
-function botSay(html,me){S.bot.msgs.push({html,t:Date.now(),me:!!me});
- if(S.bot.msgs.length>80)S.bot.msgs.shift();
- if(S.cur===BOT_ID)renderBot()}
-function renderBot(){const box=$('#msgs');
- box.innerHTML=S.bot.msgs.map(m=>`<div class="m botmsg ${m.me?'me':''}">${m.html}<div class="t">${tm(m.t)}</div></div>`).join('');
- box.scrollTop=box.scrollHeight}
-function botRow(){const d=S.bot.data||{},hint=d.group?('группа '+d.group):(d.upd?'расписание загружено':'нажмите, чтобы настроить');
- return `<div class="row ${S.cur===BOT_ID?'on':''}" data-chat="${BOT_ID}"><div class="av" style="background:#2ea1ff">🎓</div><div class="mid"><b>Расписание МУИВ ${VF('Бот')}</b><span class="sub">${esc(hint)}</span></div><span class="sub">бот</span></div>`}
+async function answerCall(){if(!RING||CALL)return;
+ const {id,d}=RING;stopRing();
+ let stream;
+ try{stream=await navigator.mediaDevices.getUserMedia(mediaWanted(d.type))}
+ catch(e){toast('Нет доступа к микрофону/камере');declineCall(id);return}
+ CALL={id,role:'callee',type:d.type,peer:resolveUser(d.from),local:stream,unsub:[],pend:[],ready:true};
+ openCallUI();setCallStatus('соединяем…');
+ const pc=CALL.pc=newPC(),ref=callsCol().doc(id);
+ stream.getTracks().forEach(t=>pc.addTrack(t,stream));
+ pc.onicecandidate=e=>{if(e.candidate)ref.collection('b').add(e.candidate.toJSON()).catch(()=>{})};
+ try{
+  await pc.setRemoteDescription(new RTCSessionDescription(d.offer));
+  const ans=await pc.createAnswer();await pc.setLocalDescription(ans);
+  await ref.update({answer:{type:ans.type,sdp:ans.sdp},state:'accepted'});
+ }catch(e){toast('Не удалось принять звонок: '+(e.code||e.message));endCall('error');return}
+ CALL.connectedAt=Date.now();setCallStatus();
+ CALL.unsub.push(ref.collection('a').onSnapshot(s=>{s.docChanges().forEach(c=>{
+  if(c.type==='added'&&CALL&&CALL.id===id)CALL.pc.addIceCandidate(new RTCIceCandidate(c.doc.data())).catch(()=>{})})},()=>{}));
+ CALL.unsub.push(ref.onSnapshot(snap=>{if(!CALL||CALL.id!==id)return;
+  const x=snap.data();if(!x||x.state==='ended')endCall('remote')},()=>{}))}
 
-function leaveBot(){$('#botbar').hidden=true;$('#ba').hidden=false;$('#bv').hidden=false;$('#tx').placeholder='Сообщение'}
-function openBot(){if(!hasBot())return;
- msgUn&&msgUn();msgUn=null;S.cur=BOT_ID;S.adminMode=false;clearReply();
- $('#empty').hidden=true;$('#cv').hidden=false;$('#app').classList.add('open');
- $('#hav').innerHTML='<div class="av" style="background:#2ea1ff">🎓</div>';
- $('#htl').innerHTML='Расписание МУИВ '+VF('Бот');
- $('#hsb').textContent='бот · виден только вам';
- $('#addm').hidden=true;$('#hmenu').hidden=true;
- $('#robar').hidden=true;$('#cmp').hidden=false;$('#botbar').hidden=false;
- $('#ba').hidden=true;$('#bv').hidden=true;$('#tx').placeholder='сегодня / завтра / неделя';
- if(!S.bot.msgs.length){
-  botSay('<h4>Привет! 🎓</h4>Я показываю расписание колледжа МУИВ (СПО).<br>Нажмите кнопку внизу или напишите словами: «сегодня», «завтра», «неделя».');
-  if(!(S.bot.data&&(S.bot.data.week||S.bot.data.days)))
-   botSay('Расписание пока пустое. Два способа заполнить:<br>1) <b>📥 Вставить расписание</b> — скопировать текст с сайта и вставить сюда;<br>2) <b>✏️ Редактировать</b> — вписать постоянные пары по дням недели.<br>Кнопка <b>🔄 Обновить с сайта</b> попробует забрать данные автоматически.');
- }
- const today=dkey(new Date());
- if(S.bot.data&&(S.bot.data.week||S.bot.data.days)&&S.bot.autoDay!==today){S.bot.autoDay=today;botSay(dayHtml(new Date()))}
- renderBot();render()}
+function declineCall(idArg){const id=idArg||(RING&&RING.id);stopRing();
+ if(id)callsCol().doc(id).update({state:'declined',by:S.me}).catch(()=>{})}
 
-/* --- действия --- */
-function botAction(a){const now=new Date();
- if(a==='today'){botSay('Сегодня',1);botSay(dayHtml(now));return}
- if(a==='tomorrow'){botSay('Завтра',1);botSay(dayHtml(dadd(now,1)));return}
- if(a==='week'){botSay('Неделя',1);botSay(weekHtml(now));return}
- if(a==='next'){botSay('Следующая пара',1);botSay(nextLessonHtml());return}
- if(a==='site'){window.open(BOT_SITE,'_blank','noopener');return}
- if(a==='sync'){botSync();return}
- if(a==='import'){botImportModal();return}
- if(a==='edit'){botEditModal();return}}
+function endCall(reason){if(!CALL)return;const c=CALL;CALL=null;
+ clearTimeout(c.noAnswer);clearInterval(durIv);durIv=null;
+ (c.unsub||[]).forEach(f=>{try{f()}catch(e){}});
+ try{c.pc&&c.pc.close()}catch(e){}
+ try{(c.local?c.local.getTracks():[]).forEach(t=>t.stop())}catch(e){}
+ $('#rv').srcObject=null;$('#lv').srcObject=null;
+ $('#callui').hidden=true;$('#callui').classList.remove('hasvideo','hasme');
+ if(reason!=='remote')callsCol().doc(c.id).update({state:'ended',by:S.me}).catch(()=>{});
+ setTimeout(()=>wipeCall(c.id),3000);
+ if(c.role==='caller')logCall(c.peer,c.type,c.connectedAt?Math.round((Date.now()-c.connectedAt)/1000):0,reason)}
 
-function botAsk(v){botSay(esc(v),1);const s=v.toLowerCase();
- if(/завтра|tomorrow/.test(s))return botSay(dayHtml(dadd(new Date(),1)));
- if(/послезавтра/.test(s))return botSay(dayHtml(dadd(new Date(),2)));
- if(/недел|week|\/week/.test(s))return botSay(weekHtml(new Date()));
- if(/следующ|ближайш|next/.test(s))return botSay(nextLessonHtml());
- if(/сегодня|today|\/today|пары|расписан/.test(s))return botSay(dayHtml(new Date()));
- if(/обнов|синхрон|sync/.test(s))return botSync();
- if(/редакт|измен|запол/.test(s))return botEditModal();
- for(let i=0;i<7;i++)if(s.includes(DOW[i].slice(0,5))){
-  const now=new Date();for(let k=0;k<7;k++){const d=dadd(now,k);if(d.getDay()===i)return botSay(dayHtml(d))}}
- botSay('Не понял 🤔 Я знаю: <b>сегодня</b>, <b>завтра</b>, <b>неделя</b>, <b>следующая пара</b>, <b>обновить</b>, <b>редактировать</b>.')}
+async function wipeCall(id){try{const ref=callsCol().doc(id);
+ for(const sub of ['a','b']){const s=await ref.collection(sub).limit(300).get();
+  if(s.empty)continue;const b=db.batch();s.docs.forEach(d=>b.delete(d.ref));await b.commit()}
+ await ref.delete()}catch(e){}}
 
-/* --- попытка забрать расписание с сайта через CORS-прокси --- */
-async function fetchVia(url){const custom=(ls.g('botProxy')||'').trim();
- const B=[];
- if(custom)B.push(u=>custom.includes('{url}')?custom.replace('{url}',encodeURIComponent(u)):custom+encodeURIComponent(u));
- B.push(u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u));
- B.push(u=>'https://corsproxy.io/?url='+encodeURIComponent(u));
- B.push(u=>'https://r.jina.ai/'+u);
- let last='нет ответа';
- for(const b of B){
-  try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),20000);
-   const r=await fetch(b(url),{signal:ctl.signal});clearTimeout(to);
-   if(!r.ok){last='HTTP '+r.status;continue}
-   const txt=await r.text();
-   if(txt&&txt.length>300)return txt;
-   last='пустой ответ'}
-  catch(e){last=e.name==='AbortError'?'таймаут':'сеть недоступна'}}
- throw new Error(last)}
-async function botSync(){if(S.bot.busy)return;S.bot.busy=true;
- botSay('Обновить с сайта',1);botSay('Секунду, стучусь на muiv.ru… ⏳');
- try{const raw=await fetchVia(BOT_SITE);
-  if(/get_jhash|__js_p_/.test(raw)&&!/\d{1,2}[:.]\d{2}\s*[–—-]\s*\d{1,2}[:.]\d{2}/.test(raw))
-   throw new Error('стоит JS-защита Bitrix');
-  let days=null;
-  const t=raw.trim();
-  if(t[0]==='{'){const j=JSON.parse(t);
-   if(j.week){await botSave({week:j.week,group:j.group||(S.bot.data||{}).group||'',src:'web'});S.bot.busy=false;
-    botSay('Готово, расписание обновлено ✅');return botSay(dayHtml(new Date()))}
-   days=j.days||null}
-  if(!days)days=parseSchedText(htmlToText(raw));
-  const n=Object.keys(days||{}).length;
-  if(!n)throw new Error('на странице не нашлось таблицы с парами');
-  await botSave({days:{...((S.bot.data||{}).days||{}),...days},src:'web'});
-  botSay('Готово! Загружено дней: '+n+' ✅');botSay(dayHtml(new Date()))}
- catch(e){
-  botSay('Не получилось забрать расписание автоматически: <b>'+esc(e.message||'ошибка')+'</b>.<br><br>'+
-   'Сайт МУИВ закрыт защитой Bitrix и не отдаёт данные обычному браузерному запросу — без своего сервера-посредника это не обойти.<br>'+
-   'Что можно сделать прямо сейчас:<br>'+
-   '• <button data-bota="site" style="color:var(--acc)">🌐 Открыть сайт</button>, выделить таблицу, скопировать — и <button data-bota="import" style="color:var(--acc)">📥 вставить сюда</button>, я разберу её на пары;<br>'+
-   '• или один раз заполнить постоянное расписание: <button data-bota="edit" style="color:var(--acc)">✏️ Редактировать</button>;<br>'+
-   '• если у вас есть свой прокси (Cloudflare Worker), укажите его в «Редактировать» — я буду ходить через него.')}
- S.bot.busy=false}
+async function logCall(peer,type,dur,reason){try{
+ const x=S.users[peer];if(!x||!x.owner)return;
+ const id=dmId(S.uid,x.owner);if(!S.chats[id])return;
+ const txt=(type==='video'?'🎥 Видеозвонок':'📞 Аудиозвонок')+' · '+
+  (dur?durTxt(dur):reason==='timeout'?'без ответа':'не состоялся');
+ const t=Date.now();
+ await db.collection('chats/'+id+'/messages').add({from:S.me,t,type:'text',text:txt});
+ await db.doc('chats/'+id).update({last:{from:S.me,t,k:'text',text:txt},lastAt:t})}catch(e){}}
 
-/* --- разбор вставленного/скачанного текста --- */
-function htmlToText(h){if(!/<[a-z!]/i.test(h))return h;
- try{const d=new DOMParser().parseFromString(h,'text/html');
-  d.querySelectorAll('script,style,noscript').forEach(n=>n.remove());
-  d.querySelectorAll('td,th,br,p,div,tr,li').forEach(n=>n.insertAdjacentText('beforeend','\n'));
-  return (d.body&&d.body.innerText||d.body&&d.body.textContent||'')}
- catch(e){return h.replace(/<[^>]+>/g,'\n')}}
-function parseSchedText(txt){const out={};let cur=null,y0=new Date().getFullYear();
- String(txt).split(/\r?\n/).forEach(raw=>{const s=raw.replace(/\s+/g,' ').trim();if(!s)return;
-  const tt=s.match(/(\d{1,2}[:.]\d{2})\s*[–—-]\s*(\d{1,2}[:.]\d{2})/);
-  const dd=s.match(/(\d{1,2})[.\/](\d{1,2})(?:[.\/](\d{2,4}))?/);
-  if(dd&&!tt){const yy=dd[3]?(+dd[3]<100?2000+ +dd[3]:+dd[3]):y0;
-   cur=yy+'-'+String(+dd[2]).padStart(2,'0')+'-'+String(+dd[1]).padStart(2,'0');
-   out[cur]=out[cur]||[];return}
-  if(tt&&cur){const rest=s.slice(s.indexOf(tt[0])+tt[0].length).replace(/^[\s|·,–—-]+/,'').trim();
-   const parts=rest.split(/\s*[|;]\s*/);
-   out[cur].push({t:tt[1]+'–'+tt[2],s:parts[0]||'Занятие',r:parts[1]||'',p:parts[2]||''})}});
- Object.keys(out).forEach(k=>{if(!out[k].length)delete out[k]});
- return out}
-function botImportModal(){
- $('#box').innerHTML=`<b>📥 Вставить расписание</b>
-  <div class="sub">Скопируйте таблицу с сайта (или из файла) и вставьте сюда. Я пойму строки вида:<br><code>22.09.2025</code><br><code>09:00–10:30 | Математика | каб. 312 | Иванов И.И.</code></div>
-  <textarea id="impt" rows="10" placeholder="Вставьте текст расписания…" style="min-height:180px"></textarea>
-  <div style="display:flex;gap:8px"><button class="pri" id="impok">Разобрать</button><button id="impno">Отмена</button></div>`;
- $('#modal').hidden=false;$('#impno').onclick=()=>$('#modal').hidden=true;
- $('#impok').onclick=async()=>{const v=$('#impt').value;if(!v.trim()){toast('Вставьте текст');return}
-  const days=parseSchedText(htmlToText(v)),n=Object.keys(days).length;
-  if(!n){toast('Не нашёл ни одной пары — проверьте формат');return}
-  await botSave({days:{...((S.bot.data||{}).days||{}),...days},src:'import'});
-  $('#modal').hidden=true;botSay('Импортировано дней: '+n+' ✅');botSay(dayHtml(new Date()))}}
-function botEditModal(){const D=S.bot.data||{},W=D.week||{};
- const txt=i=>(W[String(i)]||[]).map(l=>[l.t||'',l.s||'',l.r||'',l.p||''].join(' | ').replace(/( \| )+$/,'')).join('\n');
- $('#box').innerHTML=`<b>✏️ Постоянное расписание</b>
-  <div class="sub">Одна пара — одна строка: <code>время | предмет | кабинет | преподаватель</code>. Лишнее можно не писать.</div>
-  <input id="bgrp" placeholder="Номер группы (для себя)" maxlength="30" value="${esc(D.group||'')}">
-  ${[1,2,3,4,5,6].map(i=>`<div class="sub" style="margin-top:6px">${cap(DOW[i])}</div><textarea data-wd="${i}" rows="3" placeholder="09:00–10:30 | Математика | каб. 312">${esc(txt(i))}</textarea>`).join('')}
-  <div class="sub" style="margin-top:8px">Свой CORS-прокси для «Обновить с сайта» (необязательно)</div>
-  <input id="bprx" placeholder="https://my-worker.workers.dev/?url={url}" value="${esc(ls.g('botProxy')||'')}">
-  <div style="display:flex;gap:8px;margin-top:8px"><button class="pri" id="bwok">Сохранить</button><button id="bwno">Отмена</button><button id="bwclr" style="color:#e5484d">Очистить всё</button></div>`;
- $('#modal').hidden=false;$('#bwno').onclick=()=>$('#modal').hidden=true;
- $('#bwclr').onclick=async()=>{if(!confirm('Стереть всё расписание?'))return;
-  await botSave({week:{},days:{}});$('#modal').hidden=true;botSay('Расписание очищено.')};
- $('#bwok').onclick=async()=>{const week={};
-  document.querySelectorAll('#box textarea[data-wd]').forEach(ta=>{
-   const arr=ta.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(line=>{
-    const p=line.split('|').map(x=>x.trim());
-    if(p.length>1)return{t:p[0],s:p[1]||'',r:p[2]||'',p:p[3]||''};
-    const m=line.match(/^(\d{1,2}[:.]\d{2}\s*[–—-]\s*\d{1,2}[:.]\d{2})\s*(.*)$/);
-    return m?{t:m[1],s:m[2]||'Занятие'}:{t:'',s:line}});
-   week[ta.dataset.wd]=arr});
-  const prx=$('#bprx').value.trim();prx?ls.s('botProxy',prx):ls.d('botProxy');
-  await botSave({week,group:$('#bgrp').value.trim()});
-  $('#modal').hidden=true;botSay('Расписание сохранено ✅');botSay(dayHtml(new Date()));render()}}
+function toggleMic(){if(!CALL)return;const t=(CALL.local.getAudioTracks()||[])[0];if(!t)return;
+ t.enabled=!t.enabled;$('#cmic').textContent=t.enabled?'🎤':'🔇';$('#cmic').classList.toggle('off',!t.enabled)}
+function toggleCam(){if(!CALL)return;const t=(CALL.local.getVideoTracks()||[])[0];if(!t)return;
+ t.enabled=!t.enabled;$('#ccam').textContent=t.enabled?'🎥':'🚫';$('#ccam').classList.toggle('off',!t.enabled);
+ $('#callui').classList.toggle('hasme',t.enabled)}
+
+/* --- входящий звонок --- */
+function showRing(id,d){RING={id,d};const u=resolveUser(d.from),x=S.users[u]||{};
+ $('#rav').innerHTML=av(u,x.name||u);
+ $('#rname').innerHTML=dispName(u);
+ $('#rkind').textContent=(d.type==='video'?'Входящий видеозвонок':'Входящий аудиозвонок');
+ $('#ringui').hidden=false;
+ clearInterval(ringIv);ringBeep();ringIv=setInterval(ringBeep,1900);
+ try{navigator.vibrate&&navigator.vibrate([400,300,400])}catch(e){}
+ try{if(window.Notification&&Notification.permission==='granted'&&ls.g('ntf')!=='0')
+  new Notification(uname(u),{body:d.type==='video'?'🎥 Видеозвонок':'📞 Аудиозвонок'})}catch(e){}
+ RING.to=setTimeout(()=>{if(RING&&RING.id===id)declineCall(id)},45000)}
+function stopRing(){clearInterval(ringIv);ringIv=null;if(RING)clearTimeout(RING.to);RING=null;$('#ringui').hidden=true}
+function watchCalls(){if(!callOk())return;
+ callsCol().where('uids','array-contains',S.uid).onSnapshot(s=>{
+  s.docChanges().forEach(ch=>{const d=ch.doc.data(),id=ch.doc.id;if(!d)return;
+   if(d.toUid!==S.uid)return;
+   if(ch.type==='removed'){if(RING&&RING.id===id)stopRing();return}
+   if(d.state==='ringing'){
+    if(CALL||RING)return;
+    if(Date.now()-(d.t||0)>60000)return;
+    if(isBlocked(d.from))return;
+    showRing(id,d)}
+   else if(RING&&RING.id===id)stopRing()})},()=>{})}
+window.addEventListener('beforeunload',()=>{if(CALL)endCall();else if(RING)declineCall()});
 
 /* ---------- events ---------- */
 document.addEventListener('click',async e=>{const t=e.target,c=t.closest('[data-chat]'),d=t.closest('[data-dm]'),a=t.closest('[data-add]');
+ /* --- звонки --- */
+ if(t.closest('#cend')){endCall();return}
+ if(t.closest('#cmic')){toggleMic();return}
+ if(t.closest('#ccam')){toggleCam();return}
+ if(t.closest('#racc')){answerCall();return}
+ if(t.closest('#rdec')){declineCall();return}
+ if(t.closest('#bca')){const cc=S.chats[S.cur];if(cc&&cc.type==='dm')startCall(other(cc),'audio');return}
+ if(t.closest('#bcv')){const cc=S.chats[S.cur];if(cc&&cc.type==='dm')startCall(other(cc),'video');return}
+ const cb=t.closest('[data-call]');if(cb){e.stopPropagation();$('#modal').hidden=true;startCall(cb.dataset.call,cb.dataset.ctype||'audio');return}
  /* --- аккаунты --- */
  const adl=t.closest('[data-accdel]');if(adl){e.stopPropagation();const u=adl.dataset.accdel;
   if(confirm('Убрать @'+u+' из списка аккаунтов на этом устройстве?')){ACC.del(u);if($('#auth').hidden===false)authAccs();else render()}return}
@@ -840,9 +868,6 @@ document.addEventListener('click',async e=>{const t=e.target,c=t.closest('[data-
   $('#au').value=u;setMode('login');
   if(p){ls.d('addAcc');ls.s('switchTo',JSON.stringify({u,p}));location.reload()}else{$('#ap').focus();toast('Введите пароль от @'+u)}return}
  if(t.id==='acancel'){const back=ACC.list()[0];ls.d('addAcc');if(back)switchAccount(back.u);else location.reload();return}
- /* --- бот «Расписание» --- */
- const bb2=t.closest('#botbar button');if(bb2){botAction(bb2.dataset.bot);return}
- const bA=t.closest('[data-bota]');if(bA){botAction(bA.dataset.bota);return}
  const rb=t.closest('.rb:not(.mb)');if(rb){const r=rb.getBoundingClientRect(),p=$('#pk');p.dataset.id=rb.dataset.rid;p.hidden=false;p.style.top=Math.max(8,r.top-46)+'px';p.style.left=Math.min(innerWidth-p.offsetWidth-8,Math.max(8,r.left-100))+'px';e.stopPropagation();return}
  const mb=t.closest('.mb');if(mb){const r=mb.getBoundingClientRect();showMenuAt(mb.dataset.mid,r.bottom+6,r.left-120);e.stopPropagation();return}
  const pe=t.closest('#pk button');if(pe){$('#pk').hidden=true;react($('#pk').dataset.id,pe.dataset.e);return}
@@ -883,7 +908,7 @@ document.addEventListener('click',async e=>{const t=e.target,c=t.closest('[data-
  if(t.id==='addacc'){addAccountFlow();return}
  if(t.id==='bl'){blacklistModal();return}
  if(t.id==='pw'){const p=prompt('Новый пароль (минимум 6 символов)');if(p&&p.length>=6){try{await firebase.auth().currentUser.updatePassword(p);ACC.add(S.me,p,(S.users[S.me]||{}).name);toast('Пароль изменён')}catch(x){toast(x.code==='auth/requires-recent-login'?'Выйдите, войдите заново и повторите':'Ошибка: '+x.code)}}else if(p)toast('Минимум 6 символов')}
- if(t.id==='back'){$('#app').classList.remove('open');leaveBot();$('#cv').hidden=true;$('#empty').hidden=false;S.cur=null;S.adminMode=false;msgUn&&msgUn();render()}
+ if(t.id==='back'){$('#app').classList.remove('open');$('#cv').hidden=true;$('#empty').hidden=false;S.cur=null;S.adminMode=false;msgUn&&msgUn();render()}
  if(t.id==='bs'){R?stopRec():sendText()}if(t.id==='bv')startRec();if(t.id==='rc')stopRec(1);
  if(t.id==='rpx')clearReply();
  if(t.id==='modal')t.hidden=true});
@@ -901,9 +926,9 @@ $('#tx').oninput=e=>{const el=e.target;el.style.height='auto';el.style.height=Ma
 $('#au').onkeydown=$('#an').onkeydown=$('#ap').onkeydown=e=>{if(e.key==='Enter')register()};$('#asw').onclick=()=>setMode(AM==='reg'?'login':'reg');$('#ago').onclick=register;
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(S.cur)markRead(S.cur);render();if(S.cur)head()}});
 {const M=$('#msgs');let LP,sx=0,sy=0,lastTapId=0,lastTapT=0;
- M.addEventListener('pointerdown',e=>{if(S.cur===BOT_ID)return;const m=e.target.closest('.m');if(!m||e.target.closest('audio,button,.rx,.att-file,.att-img,video'))return;sx=e.clientX;sy=e.clientY;clearTimeout(LP);LP=setTimeout(()=>msgMenu(m),500)});
+ M.addEventListener('pointerdown',e=>{const m=e.target.closest('.m');if(!m||e.target.closest('audio,button,.rx,.att-file,.att-img,video'))return;sx=e.clientX;sy=e.clientY;clearTimeout(LP);LP=setTimeout(()=>msgMenu(m),500)});
  M.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>12)clearTimeout(LP)});
- M.addEventListener('pointerup',e=>{clearTimeout(LP);if(S.cur===BOT_ID)return;if(S.lpFired){setTimeout(()=>S.lpFired=false,150);return}
+ M.addEventListener('pointerup',e=>{clearTimeout(LP);if(S.lpFired){setTimeout(()=>S.lpFired=false,150);return}
   const m=e.target.closest('.m');if(!m||e.target.closest('audio,button,.rx,.att-file,.att-img,video'))return;
   const id=m.id.slice(2),now=Date.now();
   if(lastTapId===id&&now-lastTapT<300){react(id,'❤️');popHeart(m);lastTapId=0}else{lastTapId=id;lastTapT=now}});
@@ -911,12 +936,12 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(S.cur)
  M.addEventListener('contextmenu',e=>{if(e.target.closest('.m'))e.preventDefault()});
  M.addEventListener('click',e=>{if(S.lpFired){e.stopPropagation();e.preventDefault()}},true)}
 {const L=$('#list');let T,cx=0,cy=0;
- const start=e=>{const r=e.target.closest('[data-chat]');if(!r||r.dataset.chat===BOT_ID||e.target.closest('button'))return;cx=e.clientX;cy=e.clientY;clearTimeout(T);
+ const start=e=>{const r=e.target.closest('[data-chat]');if(!r||e.target.closest('button'))return;cx=e.clientX;cy=e.clientY;clearTimeout(T);
   T=setTimeout(()=>{S.lpChat=true;chatMenu(r.dataset.chat,cy,cx)},500)};
  L.addEventListener('pointerdown',start);
  L.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-cx)+Math.abs(e.clientY-cy)>12)clearTimeout(T)});
  ['pointerup','pointercancel','pointerleave','scroll'].forEach(n=>L.addEventListener(n,()=>clearTimeout(T)));
- L.addEventListener('contextmenu',e=>{const r=e.target.closest('[data-chat]');if(!r||r.dataset.chat===BOT_ID)return;e.preventDefault();S.lpChat=true;chatMenu(r.dataset.chat,e.clientY,e.clientX)});
+ L.addEventListener('contextmenu',e=>{const r=e.target.closest('[data-chat]');if(!r)return;e.preventDefault();S.lpChat=true;chatMenu(r.dataset.chat,e.clientY,e.clientX)});
  L.addEventListener('click',e=>{if(S.lpChat){e.stopPropagation();e.preventDefault();setTimeout(()=>S.lpChat=false,150)}},true)}
 if(ls.g('theme'))document.documentElement.dataset.theme=ls.g('theme');
 

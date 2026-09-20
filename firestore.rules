@@ -48,6 +48,34 @@ service cloud.firestore {
       }
     }
 
+    // ---- Звонки (WebRTC) --------------------------------------------------
+    // В calls/<id> лежит только "рукопожатие": кто кому звонит, offer/answer
+    // и ICE-кандидаты. Сам разговор идёт напрямую между устройствами и сюда
+    // не попадает. Документ живёт секунды и удаляется после звонка.
+    // Читать и менять его могут только два участника звонка.
+    match /calls/{c} {
+      allow read: if signed() && request.auth.uid in resource.data.uids;
+      allow create: if signed()
+        && request.auth.uid == request.resource.data.fromUid
+        && request.resource.data.uids.size() == 2
+        && request.auth.uid in request.resource.data.uids
+        && request.resource.data.toUid != request.auth.uid
+        // нельзя звонить тому, кто вас заблокировал
+        && !blocks(request.resource.data.to, request.resource.data.from);
+      allow update: if signed()
+        && request.auth.uid in resource.data.uids
+        && request.resource.data.uids == resource.data.uids
+        && request.resource.data.fromUid == resource.data.fromUid
+        && request.resource.data.toUid == resource.data.toUid;
+      allow delete: if signed() && request.auth.uid in resource.data.uids;
+
+      // ICE-кандидаты: "a" — от звонящего, "b" — от принимающего.
+      match /{side}/{cand} {
+        allow read, create, delete: if signed()
+          && request.auth.uid in get(/databases/$(database)/documents/calls/$(c)).data.uids;
+      }
+    }
+
     match /chats/{c} {
       allow read: if signed() && (request.auth.uid in resource.data.uids || isOwner());
       allow create: if signed()
