@@ -130,12 +130,39 @@ service cloud.firestore {
           && request.auth.uid in chatDoc(c).data.uids
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['re'])
           && request.resource.data.get('re', {}).diff(resource.data.get('re', {})).affectedKeys().hasOnly([request.auth.token.email.split('@')[0]]);
+        // Счётчик комментариев под постом канала — обновлять (инкремент/декремент)
+        // может любой участник чата, само значение не критично для безопасности.
+        allow update: if signed()
+          && request.auth.uid in chatDoc(c).data.uids
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['cc']);
         // Own messages anywhere; in a 1-to-1 chat either side may wipe the history
         // (this is what "delete for both" uses).
         allow delete: if signed() && (
           userDoc(resource.data.from).data.owner == request.auth.uid
           || (request.auth.uid in chatDoc(c).data.uids && chatDoc(c).data.type == 'dm')
         );
+
+        // Комментарии к посту канала (как обсуждение под постом в Telegram).
+        // Писать может любой участник чата, даже если сам канал ему только
+        // на чтение; читать могут все участники плюс владелец приложения
+        // (для модерации). Удалить комментарий может его автор, владелец
+        // канала (uids[0] — тот, кто его создал) или @temqua.
+        match /comments/{k} {
+          allow read: if signed() && (request.auth.uid in chatDoc(c).data.uids || isOwner());
+          allow create: if signed()
+            && chatDoc(c).data.type == 'channel'
+            && request.auth.uid in chatDoc(c).data.uids
+            && userDoc(request.resource.data.from).data.owner == request.auth.uid
+            && request.resource.data.keys().hasOnly(['from','t','text'])
+            && request.resource.data.text is string
+            && request.resource.data.text.size() > 0
+            && request.resource.data.text.size() <= 2000;
+          allow delete: if signed() && (
+            userDoc(resource.data.from).data.owner == request.auth.uid
+            || request.auth.uid == chatDoc(c).data.uids[0]
+            || isOwner()
+          );
+        }
       }
     }
   }
