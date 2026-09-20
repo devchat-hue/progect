@@ -45,10 +45,26 @@ main{display:flex;flex-direction:column;min-height:0;background:var(--wall);posi
 .m .n{color:var(--acc);font-size:12px;font-weight:600;display:flex;align-items:center;gap:2px}.m .t{font-size:11px;color:var(--sub);text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:2px}
 .m.flash{animation:fl .9s}@keyframes fl{0%,100%{box-shadow:none}30%{box-shadow:0 0 0 3px var(--acc)}}
 audio{height:36px;max-width:100%}
-.circ{width:200px;height:200px;border-radius:50%;object-fit:cover;background:#000;display:block;cursor:pointer}
-.m.circle-msg{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border:0;padding:0;max-width:200px}
-.m.circle-msg .t{background:var(--bg);border-radius:10px;padding:1px 6px;display:inline-flex;margin-top:4px}
-.m.circle-msg .rx:not(:empty){margin-top:4px}
+/* --- бот «Расписание» --- */
+#botbar{display:flex;gap:6px;padding:8px 10px 0;overflow-x:auto;scrollbar-width:none;background:var(--glass);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%)}
+#botbar::-webkit-scrollbar{display:none}
+#botbar button{flex:none;background:var(--hov);border:1px solid var(--line);border-radius:16px;padding:7px 12px;font-size:13.5px;white-space:nowrap}
+#botbar button:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
+.m.botmsg{max-width:min(92%,520px)}
+.m.botmsg .les{display:flex;gap:8px;padding:4px 0;border-top:1px solid var(--glassb)}
+.m.botmsg .les:first-of-type{border-top:0}
+.m.botmsg .num{flex:none;width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font-size:12px;display:grid;place-items:center;margin-top:2px}
+.m.botmsg .les b{display:block}
+.m.botmsg .les .sub{font-size:12.5px}
+.m.botmsg h4{margin:0 0 4px;font-size:15px}
+/* --- несколько аккаунтов --- */
+.accrow{display:flex;gap:10px;align-items:center;padding:7px 8px;border-radius:12px;cursor:pointer}
+.accrow:hover{background:var(--hov)}
+.accrow.cur{background:var(--acc);color:#fff}.accrow.cur .sub{color:#e8e8ff}
+.accrow .mid{min-width:0;flex:1}
+#accpick{display:flex;flex-direction:column;gap:2px;margin:4px 0 8px}
+#authaccs{display:flex;flex-direction:column;gap:4px;width:100%;margin-bottom:6px}
+#authaccs .accrow{border:1px solid var(--line)}
 .att-img{max-width:260px;max-height:320px;border-radius:12px;display:block;cursor:pointer;object-fit:cover}
 .att-video{max-width:260px;border-radius:12px;display:block}
 .att-file{display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;background:#0000000d;padding:7px 10px;border-radius:12px}
@@ -84,7 +100,6 @@ audio{height:36px;max-width:100%}
 #cmp input{border-radius:20px}.ic{font-size:19px;padding:6px 8px;border-radius:50%;flex:none}.ic:hover{background:#0000000d}
 #recbar{display:none;flex:1;align-items:center;gap:10px}#recbar i{width:10px;height:10px;border-radius:50%;background:#e5484d;animation:b 1s infinite}
 @keyframes b{50%{opacity:.2}}
-#prev{position:absolute;right:16px;bottom:80px;width:160px;height:160px;border-radius:50%;object-fit:cover;border:3px solid var(--acc);display:none;background:#000}
 #replybar{display:none;align-items:center;gap:8px;padding:6px 12px;border-top:1px solid var(--glassb)}
 #replybar .rp{flex:1;border-left:3px solid var(--acc);padding-left:8px;min-width:0}
 #replybar .rp b{display:block;color:var(--acc);font-size:12px}#replybar .rp span{display:block;font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -119,10 +134,11 @@ audio{height:36px;max-width:100%}
 }
 </style></head><body>
 <div id="auth" hidden>
- <h1>Анонимный мессенджер</h1><div class="sub">Без номера телефона. Только уникальный @username.</div>
+ <h1>Анонимный мессенджер</h1><div class="sub" id="asub">Без номера телефона. Только уникальный @username.</div>
+ <div id="authaccs" hidden></div>
  <input id="au" placeholder="@username (a-z, 0-9, _)" maxlength="20" autocapitalize="off">
  <input id="an" placeholder="Имя (необязательно)" maxlength="30">
- <input id="ap" type="password" placeholder="Пароль (мин. 6 символов)" autocomplete="current-password"><button class="pri" id="ago">Создать аккаунт</button><button id="asw" class="sub"></button><div class="err" id="ae"></div>
+ <input id="ap" type="password" placeholder="Пароль (мин. 6 символов)" autocomplete="current-password"><button class="pri" id="ago">Создать аккаунт</button><button id="asw" class="sub"></button><button id="acancel" class="sub" hidden>← Вернуться к моему аккаунту</button><div class="err" id="ae"></div>
 </div>
 <div id="app" hidden>
  <aside><div class="top"><input id="q" placeholder="Точный @username человека"></div><div id="list"></div>
@@ -130,11 +146,14 @@ audio{height:36px;max-width:100%}
  <main><div id="empty">Выберите чат</div>
   <section id="cv" hidden>
    <div id="hd"><button id="back">‹</button><div class="hav" id="hav"></div><div class="mid"><b id="htl"></b><span class="sub" id="hsb"></span></div><button class="ic" id="addm" title="Добавить участников" hidden>➕</button><button class="ic" id="hmenu" title="Меню чата" hidden>⋮</button></div>
-   <div id="msgs"></div><video id="prev" muted playsinline></video>
+   <div id="msgs"></div>
    <div id="replybar"><div class="rp"><b id="rpn"></b><span id="rpt"></span></div><button class="ic" id="rpx">✕</button></div>
    <div id="robar" hidden></div>
+   <div id="botbar" hidden>
+    <button data-bot="today">📅 Сегодня</button><button data-bot="tomorrow">📆 Завтра</button><button data-bot="week">🗓 Неделя</button><button data-bot="next">⏭ Следующая пара</button><button data-bot="sync">🔄 Обновить с сайта</button><button data-bot="import">📥 Вставить расписание</button><button data-bot="edit">✏️ Редактировать</button><button data-bot="site">🌐 Сайт МУИВ</button>
+   </div>
    <div id="cmp"><textarea id="tx" rows="1" placeholder="Сообщение" autocomplete="off"></textarea><div id="recbar"><i></i><span id="rt">0:00</span><button id="rc">✕</button></div>
-    <button class="ic" id="ba" title="Прикрепить фото / видео / файл">📎</button><button class="ic" id="bv" title="Голосовое">🎤</button><button class="ic" id="bc" title="Кружок">⭕</button><button class="ic" id="bs" title="Отправить">➤</button></div>
+    <button class="ic" id="ba" title="Прикрепить фото / видео / файл">📎</button><button class="ic" id="bv" title="Голосовое">🎤</button><button class="ic" id="bs" title="Отправить">➤</button></div>
   </section></main>
 </div>
 <div id="modal" hidden><div id="box"></div></div><div id="toast"></div><input type="file" id="avf" accept="image/*" hidden><input type="file" id="atf" hidden><input type="file" id="wpf" accept="image/*" hidden>
@@ -147,7 +166,37 @@ audio{height:36px;max-width:100%}
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ls={g(k){try{return localStorage.getItem(k)}catch(e){return null}},s(k,v){try{localStorage.setItem(k,v)}catch(e){}},d(k){try{localStorage.removeItem(k)}catch(e){}}};
-const S={me:ls.g('me'),users:{},chats:{},cur:null,tab:'chats',q:'',un:{},t0:Date.now(),snd:ls.g('snd')!=='0',reads:JSON.parse(ls.g('reads')||'{}'),shown:new Set(),replyTo:null,msgs:{},myContacts:[],adminMode:false,adminChats:{},adminSub:'users',aq:'',blocked:[],hid:{},pinned:[]};
+/* ---------- несколько аккаунтов (как в Telegram) ----------
+   Список сохранённых аккаунтов лежит в localStorage этого устройства.
+   Пароль хранится в слегка запутанном виде — это защита от случайного
+   взгляда, а не от человека с доступом к вашему телефону. Не включайте
+   «запомнить» на чужом устройстве. */
+const XK=s=>s.split('').map((c,i)=>String.fromCharCode(c.charCodeAt(0)^((i*7+41)%251))).join('');
+const encP=p=>{try{return btoa(XK(unescape(encodeURIComponent(p))))}catch(e){return''}};
+const decP=b=>{try{return decodeURIComponent(escape(XK(atob(b))))}catch(e){return''}};
+const ACC={
+ list(){try{const a=JSON.parse(ls.g('accs')||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}},
+ save(l){ls.s('accs',JSON.stringify(l.slice(0,8)))},
+ add(u,p,n){const l=ACC.list().filter(a=>a.u!==u);l.unshift({u,p:p?encP(p):'',n:n||u});ACC.save(l)},
+ setName(u,n){const l=ACC.list();const a=l.find(x=>x.u===u);if(a&&n&&a.n!==n){a.n=n;ACC.save(l)}},
+ rename(oldU,newU){const l=ACC.list();const a=l.find(x=>x.u===oldU);if(a){a.u=newU;ACC.save(l)}},
+ del(u){ACC.save(ACC.list().filter(a=>a.u!==u))},
+ pass(u){const a=ACC.list().find(x=>x.u===u);return a&&a.p?decP(a.p):null}
+};
+function switchAccount(u){if(u===S.me)return;
+ const p=ACC.pass(u);
+ try{goOffline()}catch(e){}
+ if(p){ls.d('addAcc');ls.s('switchTo',JSON.stringify({u,p}))}else{ls.s('addAcc','1');ls.s('prefillUser',u)}
+ location.reload()}
+function addAccountFlow(){try{goOffline()}catch(e){}ls.s('addAcc','1');ls.d('prefillUser');location.reload()}
+function forgetAccount(u){ACC.del(u);
+ if(u===S.me){const rest=ACC.list();if(rest.length)switchAccount(rest[0].u);
+  else{try{goOffline()}catch(e){}firebase.auth().signOut().then(()=>location.reload())}}
+ else{toast('Аккаунт @'+u+' убран из списка');render()}}
+function accRowsHtml(){const l=ACC.list();
+ return l.map(a=>{const cur=a.u===S.me,x=S.users[a.u]||{};
+  return `<div class="accrow ${cur?'cur':''}" data-acc="${esc(a.u)}">${av(a.u,x.name||a.n)}<div class="mid"><b>${esc(x.name||a.n||a.u)}${cur?bmark(a.u):''}</b><div class="sub">@${esc(a.u)}${cur?' · активен':''}</div></div>${cur?'<span>✓</span>':`<button class="ic" data-accdel="${esc(a.u)}" title="Убрать из списка">✕</button>`}</div>`}).join('')}
+const S={me:ls.g('me'),users:{},chats:{},cur:null,tab:'chats',q:'',un:{},t0:Date.now(),snd:ls.g('snd')!=='0',reads:JSON.parse(ls.g('reads')||'{}'),shown:new Set(),replyTo:null,msgs:{},myContacts:[],adminMode:false,adminChats:{},adminSub:'users',aq:'',blocked:[],hid:{},pinned:[],bot:{msgs:[],data:null,busy:false,autoDay:null}};
 let db,msgUn=null,Q=Promise.resolve(),R=null;
 const COL=['#e17076','#7bc862','#e5ca77','#65aadd','#a695e7','#ee7aae','#6ec9cb','#faa774'];
 const col=s=>COL[[...s].reduce((a,c)=>a+c.charCodeAt(0),0)%8];
@@ -262,20 +311,31 @@ function popHeart(el){const h=document.createElement('span');h.className='hp';h.
 
 /* ---------- auth ---------- */
 let AM='reg';const EM=u=>u+'@messenger.app';
-function setMode(m){AM=m;$('#an').hidden=m==='login';$('#ago').textContent=m==='reg'?'Создать аккаунт':'Войти';$('#asw').textContent=m==='reg'?'Уже есть аккаунт? Войти':'Нет аккаунта? Регистрация';$('#ae').textContent=''}
+function setMode(m){AM=m;$('#an').hidden=m==='login';$('#ago').textContent=m==='reg'?'Создать аккаунт':'Войти';$('#asw').textContent=m==='reg'?'Уже есть аккаунт? Войти':'Нет аккаунта? Регистрация';$('#ae').textContent='';authAccs()}
+/* список сохранённых аккаунтов прямо на экране входа */
+function authAccs(){const box=$('#authaccs'),l=ACC.list(),adding=ls.g('addAcc')==='1';
+ $('#asub').textContent=adding?'Добавление ещё одного аккаунта. Ваши прежние аккаунты сохранены — переключайтесь одним касанием.':'Без номера телефона. Только уникальный @username.';
+ $('#acancel').hidden=!(adding&&l.length);
+ if(!l.length){box.hidden=true;return}
+ box.hidden=false;
+ box.innerHTML=`<div class="sub">Сохранённые аккаунты на этом устройстве</div>`+l.map(a=>
+  `<div class="accrow" data-login="${esc(a.u)}"><div class="av" style="background:${col(a.u)}">${esc(String(a.n||a.u)[0]).toUpperCase()}</div><div class="mid"><b>${esc(a.n||a.u)}</b><div class="sub">@${esc(a.u)}${ACC.pass(a.u)?'':' · нужен пароль'}</div></div><button class="ic" data-accdel="${esc(a.u)}" title="Убрать">✕</button></div>`).join('')}
 async function boot(user){S.uid=user.uid;S.me=user.email.split('@')[0];const r=db.doc('users/'+S.me),x=await r.get();
- if(!x.exists)await r.set({username:S.me,name:$('#an').value.trim()||S.me,createdAt:Date.now(),owner:S.uid});ls.s('me',S.me);enter()}
+ if(!x.exists)await r.set({username:S.me,name:$('#an').value.trim()||S.me,createdAt:Date.now(),owner:S.uid});ls.s('me',S.me);
+ const nm=(x.exists&&x.data().name)||S.me;
+ if(!ACC.list().some(a=>a.u===S.me))ACC.add(S.me,ls.g('lastPass')||'',nm);else ACC.setName(S.me,nm);
+ ls.d('lastPass');enter()}
 async function register(){
  const u=$('#au').value.trim().replace(/^@/,'').toLowerCase(),n=$('#an').value.trim()||u,p=$('#ap').value,e=$('#ae');e.textContent='';
  if(!/^[a-z][a-z0-9]*(_[a-z0-9]+)*$/.test(u)||u.length<3){e.textContent='Ник: 3–20 символов, латиница/цифры, _ только внутри';return}
  if(p.length<6){e.textContent='Пароль — минимум 6 символов';return}
  $('#ago').disabled=true;
  try{const A=firebase.auth();
-  if(AM==='login'){const c=await A.signInWithEmailAndPassword(EM(u),p);await boot(c.user)}
+  if(AM==='login'){ls.s('lastPass',p);const c=await A.signInWithEmailAndPassword(EM(u),p);ACC.add(u,p,n);ls.d('addAcc');await boot(c.user)}
   else{const c=await A.createUserWithEmailAndPassword(EM(u),p);S.uid=c.user.uid;const r=db.doc('users/'+u);
    try{await db.runTransaction(async tx=>{if((await tx.get(r)).exists)throw{code:'taken'};tx.set(r,{username:u,name:n,createdAt:Date.now(),owner:S.uid})})}
    catch(x){await c.user.delete().catch(()=>{});throw x}
-   S.me=u;ls.s('me',u);enter()}
+   S.me=u;ls.s('me',u);ACC.add(u,p,n);ls.d('addAcc');enter()}
  }catch(x){const k=x.code||'',M={'auth/email-already-in-use':'Ник @'+u+' уже занят','taken':'Ник @'+u+' уже занят','permission-denied':'Ник @'+u+' уже занят','auth/invalid-credential':'Неверный ник или пароль','auth/wrong-password':'Неверный ник или пароль','auth/user-not-found':'Неверный ник или пароль','auth/too-many-requests':'Слишком много попыток, подождите','auth/operation-not-allowed':'В Firebase не включён вход Email/Password','auth/weak-password':'Слишком простой пароль'};
   e.textContent=M[k]||'Ошибка: '+(k||x.message)}finally{$('#ago').disabled=false}
 }
@@ -285,17 +345,17 @@ function enter(){if(entered)return;entered=true;
  $('#navadmin').hidden=!isCreator(S.me);
  applyWallpaper();startPresence();
  db.collection('users').onSnapshot(s=>{S.users={};s.docs.forEach(d=>{const x=d.data();if(x&&x.username)S.users[d.id]=x});renderSoon();grantNayk()},e=>toast('Ошибка: '+e.code));
- loadHidden();
+ loadHidden();botLoad();
  db.doc('users/'+S.me+'/priv/contacts').onSnapshot(s=>{S.myContacts=(s.exists&&s.data().list)||[];render()},()=>{});
  db.doc('users/'+S.me+'/priv/blocked').onSnapshot(s=>{S.blocked=(s.exists&&s.data().list)||[];render();if(S.cur)head()},()=>{});
  db.doc('users/'+S.me+'/priv/pinned').onSnapshot(s=>{S.pinned=(s.exists&&s.data().list)||[];render()},()=>{});
  db.collection('chats').where('uids','array-contains',S.uid).onSnapshot(s=>{
   S.chats={};s.docs.forEach(d=>S.chats[d.id]=d.data());
-  if(S.cur&&!S.adminMode&&!S.chats[S.cur]){msgUn&&msgUn();msgUn=null;S.cur=null;$('#cv').hidden=true;$('#empty').hidden=false;$('#app').classList.remove('open')}
+  if(S.cur&&S.cur!==BOT_ID&&!S.adminMode&&!S.chats[S.cur]){msgUn&&msgUn();msgUn=null;S.cur=null;$('#cv').hidden=true;$('#empty').hidden=false;$('#app').classList.remove('open')}
   s.docChanges().forEach(ch=>{if(ch.type==='removed')return;const c=ch.doc.data(),id=ch.doc.id;
    if(c.last&&c.last.from!==S.me&&c.last.t>S.t0&&!S.seen?.[id+c.last.t]&&!isBlocked(c.last.from)){(S.seen=S.seen||{})[id+c.last.t]=1;
     if(S.cur===id&&!document.hidden){markRead(id)}else{S.un[id]=(S.un[id]||0)+1;badge();beep();
-     const body=c.last.k==='voice'?'🎤 Голосовое':c.last.k==='circle'?'⭕ Кружок':c.last.k==='image'?'🖼 Фото':c.last.k==='video'?'🎬 Видео':c.last.k==='file'?'📄 Файл':c.last.text;
+     const body=c.last.k==='voice'?'🎤 Голосовое':c.last.k==='circle'?'🎬 Видео':c.last.k==='image'?'🖼 Фото':c.last.k==='video'?'🎬 Видео':c.last.k==='file'?'📄 Файл':c.last.text;
      const T=(c.type==='group'||c.type==='channel')?c.title+': '+uname(c.last.from):uname(c.last.from);toast(T+' — '+body,()=>openChat(id));
      try{if(window.Notification&&Notification.permission==='granted'&&ls.g('ntf')!=='0')new Notification(T,{body})}catch(e){}}}});
   if(S.cur){head();if(!S.adminMode)refreshTicks()}
@@ -305,7 +365,7 @@ function enter(){if(entered)return;entered=true;
 /* ---------- sidebar ---------- */
 function chatRow(id){const c=S.chats[id],t=ctitle(id),u=unread(id),l=c.last,gl=isGroupLike(c),ou=gl?null:other(c),badgeH=gl?'':bmark(ou),pin=isPinned(id);
  const avH=gl?`<span data-gav="${esc(id)}">${av('#'+t,t)}</span>`:`<span data-uav="${esc(ou)}">${avU(ou)}</span>`;
- return `<div class="row ${pin?'pinned':''} ${S.cur===id?'on':''}" data-chat="${esc(id)}">${avH}<div class="mid"><b>${esc(t)}${badgeH}</b><span class="sub">${l?esc((l.from===S.me?'Вы: ':gl?uname(l.from)+': ':'')+(l.k==='voice'?'🎤 Голосовое':l.k==='circle'?'⭕ Кружок':l.k==='image'?'🖼 Фото':l.k==='video'?'🎬 Видео':l.k==='file'?'📄 Файл':l.text)):'Нет сообщений'}</span></div>${pin?'<span class="pin">📌</span>':l?`<span class="sub">${tm(l.t)}</span>`:''}${u?`<span class="bd">${u}</span>`:''}</div>`}
+ return `<div class="row ${pin?'pinned':''} ${S.cur===id?'on':''}" data-chat="${esc(id)}">${avH}<div class="mid"><b>${esc(t)}${badgeH}</b><span class="sub">${l?esc((l.from===S.me?'Вы: ':gl?uname(l.from)+': ':'')+(l.k==='voice'?'🎤 Голосовое':l.k==='circle'?'🎬 Видео':l.k==='image'?'🖼 Фото':l.k==='video'?'🎬 Видео':l.k==='file'?'📄 Файл':l.text)):'Нет сообщений'}</span></div>${pin?'<span class="pin">📌</span>':l?`<span class="sub">${tm(l.t)}</span>`:''}${u?`<span class="bd">${u}</span>`:''}</div>`}
 function userRow(u,add){const has=(S.myContacts||[]).includes(u);
  return `<div class="row" data-uav="${esc(u)}">${avU(u)}<div class="mid"><b>${esc(uname(u))}${bmark(u)}</b><span class="sub">${add?'@'+esc(u):isBlocked(u)?'в чёрном списке':statusHtml(u)}</span></div>${add&&!has&&u!==S.me?`<button class="ic" data-add="${esc(u)}" title="В контакты">➕</button>`:''}</div>`}
 /* контакты = все, кому вы писали (личные чаты) + добавленные вручную; без превью сообщений */
@@ -344,7 +404,8 @@ function render(){if($('#app').hidden)return;
  if(q){let hit=S.users[q]?resolveUser(q):null;if(hit===S.me)hit=null;
   h=hit&&S.users[hit]?userRow(hit,1):'<div class="sub" style="padding:20px;text-align:center">Пользователь не найден.<br>Введите точный @username целиком.</div>'}
  else if(S.tab==='chats'){const ids=Object.keys(S.chats).filter(i=>(S.chats[i].last||S.chats[i].by===S.me)&&!chatHidden(i)).sort((a,b)=>{const pa=isPinned(a),pb=isPinned(b);if(pa!==pb)return pa?-1:1;return (S.chats[b].lastAt||0)-(S.chats[a].lastAt||0)});
-  h=ids.length?ids.map(chatRow).join(''):'<div class="sub" style="padding:20px;text-align:center">Чатов пока нет.<br>Найдите человека по точному @username в поиске.</div>'}
+  h=ids.length?ids.map(chatRow).join(''):'<div class="sub" style="padding:20px;text-align:center">Чатов пока нет.<br>Найдите человека по точному @username в поиске.</div>';
+  if(hasBot())h=botRow()+h}
  else if(S.tab==='contacts'){const cs=contactList();
   h=`<div class="row" id="ng"><div class="av" style="background:var(--acc)">👥</div><b>Создать группу</b></div><div class="row" id="nc"><div class="av" style="background:var(--acc)">📢</div><b>Создать канал</b></div>`+
    (cs.length?`<div class="sub" style="padding:10px 12px 4px">${cs.length} контакт(ов) · ${cs.filter(isOnline).length} в сети</div>`+cs.map(u=>userRow(u)).join(''):'<div class="sub" style="padding:20px;text-align:center">Контактов нет.<br>Найдите человека по точному @username — он появится здесь, как только вы ему напишете.</div>')}
@@ -357,6 +418,11 @@ function render(){if($('#app').hidden)return;
   else h+=`<div style="padding:0 12px 8px"><input id="aq" placeholder="Поиск по @нику или имени" value="${esc(S.aq||'')}" autocapitalize="off"></div><div id="alist">${adminUsersHtml()}</div>`}
  else{const me=S.users[S.me]||{},wallImg=ls.g('wallImg'),wallPreset=ls.g('wallPreset');
   h=`<div class="set"><div style="display:flex;gap:10px;align-items:center"><div id="myav" style="cursor:pointer" title="Сменить аватар">${av(S.me,me.name)}</div><div><b>${esc(me.name||S.me)}${bmark(S.me)}</b><div class="sub">@${esc(S.me)} · нажмите на фото, чтобы сменить</div></div></div>
+  <div class="sub" style="margin-top:6px">Аккаунты на этом устройстве</div>
+  <div id="accpick">${accRowsHtml()}</div>
+  <button id="addacc" style="text-align:left;color:var(--acc)">➕ Добавить аккаунт</button>
+  <div class="sub">Нажмите на аккаунт, чтобы переключиться — как в Telegram. Пароли сохраняются только на этом устройстве, на чужом телефоне лучше убирать аккаунт из списка (✕).</div>
+  <div class="sub" style="margin-top:6px">Профиль</div>
   <input id="sn" value="${esc(me.name||'')}" maxlength="30" placeholder="Имя"><button class="pri" id="sv">Сохранить имя</button>
   <div class="sub" style="margin-top:4px">Юзернейм</div>
   <div class="row2"><input id="nun" placeholder="новый_ник" maxlength="20"><button class="pri" id="unbtn">Сменить</button></div>
@@ -372,7 +438,7 @@ function render(){if($('#app').hidden)return;
   <label>Уведомления<input type="checkbox" id="nt" style="width:auto" ${ls.g('ntf')!=='0'&&window.Notification&&Notification.permission==='granted'?'checked':''}></label>
   <label>Звук<input type="checkbox" id="sd" style="width:auto" ${S.snd?'checked':''}></label>
   <button id="bl" style="text-align:left">🚫 Чёрный список · ${(S.blocked||[]).length}</button>
-  <button id="pw" style="color:var(--acc);text-align:left">Сменить пароль</button><button id="lo" style="color:#e5484d;text-align:left">Выйти из аккаунта</button>
+  <button id="pw" style="color:var(--acc);text-align:left">Сменить пароль</button><button id="lo" style="color:#e5484d;text-align:left">Выйти из @${esc(S.me)}${ACC.list().length>1?' (остальные останутся)':''}</button>
   <div class="sub">Вход по нику и паролю с любого устройства. Восстановления пароля нет — сохраните его.<br>Подсказка: в чат можно отправить /shrug или /party 🎉, а двойной тап по сообщению ставит ❤️. Shift+Enter — новая строка.</div></div>`}
  L.innerHTML=h;L.dataset.tab=S.tab;L.dataset.q=q;L.scrollTop=sc;const th=$('#th');if(th)th.value=ls.g('theme')||''}
 let rtm=null;const renderSoon=()=>{clearTimeout(rtm);rtm=setTimeout(()=>{render();if(S.cur)head()},180)};
@@ -401,21 +467,20 @@ function head(){const id=S.cur,c=S.adminMode?(S.adminChats[id]||S.chats[id]):S.c
  else $('#robar').hidden=true}
 function clearReply(){S.replyTo=null;$('#replybar').style.display='none'}
 function setReply(id){const m=S.msgs[id];if(!m)return;
- const prev=m.type==='text'?(m.text||'').slice(0,120):m.type==='voice'?'🎤 Голосовое':m.type==='circle'?'⭕ Кружок':m.type==='image'?'🖼 Фото':m.type==='video'?'🎬 Видео':m.type==='file'?'📄 '+(m.name||'Файл'):'';
+ const prev=m.type==='text'?(m.text||'').slice(0,120):m.type==='voice'?'🎤 Голосовое':m.type==='circle'?'🎬 Видео':m.type==='image'?'🖼 Фото':m.type==='video'?'🎬 Видео':m.type==='file'?'📄 '+(m.name||'Файл'):'';
  S.replyTo={id,from:m.from,text:prev};$('#rpn').innerHTML=dispName(m.from);$('#rpt').textContent=prev;$('#replybar').style.display='flex';$('#tx').focus()}
 function scrollToMsg(id){const el=document.getElementById('m_'+id);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),900)}}
-function openChat(id){if((S.hid||{})[id]){delete S.hid[id];saveHidden()}S.cur=id;S.adminMode=false;markRead(id);clearReply();$('#empty').hidden=true;$('#cv').hidden=false;$('#app').classList.add('open');
+function openChat(id){if(id===BOT_ID)return openBot();leaveBot();if((S.hid||{})[id]){delete S.hid[id];saveHidden()}S.cur=id;S.adminMode=false;markRead(id);clearReply();$('#empty').hidden=true;$('#cv').hidden=false;$('#app').classList.add('open');
  $('#msgs').innerHTML='';delete $('#msgs').dataset.init;S.shown=new Set();S.msgs={};head();render();msgUn&&msgUn();
  msgUn=db.collection('chats/'+id+'/messages').orderBy('t','desc').limit(100).onSnapshot(s=>{
   if(S.cur!==id)return;const box=$('#msgs'),near=box.scrollHeight-box.scrollTop-box.clientHeight<120;
   s.docChanges().forEach(ch=>{if(ch.type==='removed'){const el=document.getElementById('m_'+ch.doc.id);el&&el.remove();S.shown.delete(ch.doc.id);delete S.msgs[ch.doc.id]}});
-  s.docs.slice().reverse().forEach(d=>{const m=d.data();S.msgs[d.id]=m;if(S.shown.has(d.id)){const r=document.querySelector('#m_'+d.id+' .rx');if(r&&r.dataset.k!==rxk(m)){r.dataset.k=rxk(m);r.innerHTML=rxHtml(m,d.id)}return}S.shown.add(d.id);box.insertAdjacentHTML('beforeend',bubble(m,d.id));
-   if(m.type==='circle'){const v=box.querySelector('#m_'+d.id+' video');if(v)v.addEventListener('loadeddata',()=>{try{v.currentTime=0.001}catch(e){}},{once:true})}});
+  s.docs.slice().reverse().forEach(d=>{const m=d.data();S.msgs[d.id]=m;if(S.shown.has(d.id)){const r=document.querySelector('#m_'+d.id+' .rx');if(r&&r.dataset.k!==rxk(m)){r.dataset.k=rxk(m);r.innerHTML=rxHtml(m,d.id)}return}S.shown.add(d.id);box.insertAdjacentHTML('beforeend',bubble(m,d.id));});
   if(near||!box.dataset.init){box.scrollTop=box.scrollHeight;box.dataset.init=1}},e=>toast('Ошибка: '+e.code))}
 
 /* ---------- admin (owner) view of any chat ---------- */
 async function loadAdminChats(){try{const s=await db.collection('chats').get();S.adminChats={};s.docs.forEach(d=>S.adminChats[d.id]=d.data());render()}catch(e){toast('Ошибка доступа: '+(e.code||e.message))}}
-function adminOpenChat(id){const c=S.adminChats[id];if(!c)return;S.cur=id;S.chats[id]=c;S.adminMode=true;clearReply();
+function adminOpenChat(id){const c=S.adminChats[id];if(!c)return;leaveBot();S.cur=id;S.chats[id]=c;S.adminMode=true;clearReply();
  $('#empty').hidden=true;$('#cv').hidden=false;$('#app').classList.add('open');
  $('#msgs').innerHTML='';S.shown=new Set();S.msgs={};head();msgUn&&msgUn();
  msgUn=db.collection('chats/'+id+'/messages').orderBy('t','desc').limit(100).onSnapshot(s=>{
@@ -443,9 +508,8 @@ function tickRead(m){if(m.from!==S.me)return false;const c=S.chats[S.cur];if(!c)
 function refreshTicks(){const c=S.chats[S.cur];if(!c)return;Object.keys(S.msgs).forEach(id=>{const m=S.msgs[id];if(m.from!==S.me)return;const el=document.getElementById('tk_'+id);if(!el)return;const r=tickRead(m);el.textContent=r?'✓✓':'✓';el.classList.toggle('read',r)})}
 function bubble(m,id){const me=m.from===S.me,g=isGroupLike(S.chats[S.cur]||{})||S.adminMode;let cls='m',b='';
  if(m.type==='voice'&&/^data:audio\//.test(m.data))b=`<audio controls preload="metadata" src="${m.data}"></audio>`;
- else if(m.type==='circle'&&/^data:video\//.test(m.data)){cls='m circle-msg';b=`<video class="circ" playsinline loop preload="auto" src="${m.data}" onclick="this.paused?this.play():this.pause()"></video>`}
- else if(m.type==='image'&&/^data:image\//.test(m.data))b=`<img class="att-img" loading="lazy" decoding="async" data-img="${id}" src="${m.data}" alt="">`;
- else if(m.type==='video'&&/^data:video\//.test(m.data))b=`<video class="att-video" controls preload="metadata" src="${m.data}"></video>`;
+  else if(m.type==='image'&&/^data:image\//.test(m.data))b=`<img class="att-img" loading="lazy" decoding="async" data-img="${id}" src="${m.data}" alt="">`;
+ else if((m.type==='video'||m.type==='circle')&&/^data:video\//.test(m.data))b=`<video class="att-video" controls preload="metadata" src="${m.data}"></video>`;
  else if(m.type==='file'&&m.data)b=`<a class="att-file" href="${m.data}" download="${esc(m.name||'file')}"><span class="fi">📄</span><span class="fn">${esc(m.name||'Файл')}</span></a>`;
  else b=esc(m.text||'');
  const rq=m.replyTo?`<div class="rq" data-rqid="${esc(m.replyTo.id)}"><b>${dispName(m.replyTo.from)}</b><span>${esc(m.replyTo.text||'')}</span></div>`:'';
@@ -458,6 +522,7 @@ function send(m){const id=S.cur;if(!id)return;const cc=S.chats[id];
   await db.doc('chats/'+id).update({last:{from:S.me,t,k:m.type,text:m.type==='text'?m.text:''},lastAt:t})}
  catch(e){toast(e.code==='permission-denied'?'Сообщение не доставлено: пользователь ограничил круг общения':e.code==='quota_exceeded'?'Хранилище заполнено (лимит документов)':'Не отправлено: '+(e.code||e.message))}})}
 function sendText(){let v=$('#tx').value.trim();if(!v)return;$('#tx').value='';$('#tx').style.height='';
+ if(S.cur===BOT_ID){botAsk(v);return}
  if(v==='/shrug'){send({type:'text',text:'¯\\_(ツ)_/¯'});return}
  if(v==='/party'){send({type:'text',text:'🎉 Вечеринка! 🎉'});confetti();return}
  send({type:'text',text:v.slice(0,4000)})}
@@ -486,19 +551,18 @@ function openImg(id){const m=S.msgs[id];if(!m||!m.data)return;
  $('#box').innerHTML=`<img src="${m.data}" style="max-width:100%;border-radius:12px;display:block;margin:auto">${m.name?`<div class="sub" style="text-align:center">${esc(m.name)}</div>`:''}<button id="dlimg" class="pri">Скачать</button>`;
  $('#modal').hidden=false;$('#dlimg').onclick=()=>{const a=document.createElement('a');a.href=m.data;a.download=m.name||'image.jpg';a.click()}}
 
-/* ---------- voice & circles ---------- */
-async function startRec(kind){if(R)return;
+/* ---------- голосовые сообщения ---------- */
+async function startRec(){if(R)return;
  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){toast('Запись не поддерживается в этом браузере');return}
- let st;try{st=await navigator.mediaDevices.getUserMedia(kind==='circle'?{audio:true,video:{width:240,height:240,facingMode:'user'}}:{audio:true})}
- catch(e){toast('Нет доступа к микрофону/камере. Разрешите его в браузере');return}
- const max=kind==='circle'?20:120,ch=[],mr=new MediaRecorder(st,{audioBitsPerSecond:16000,videoBitsPerSecond:150000});
+ let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}
+ catch(e){toast('Нет доступа к микрофону. Разрешите его в браузере');return}
+ const max=120,ch=[],mr=new MediaRecorder(st,{audioBitsPerSecond:16000});
  R={mr,st,cancel:false,t0:Date.now()};mr.ondataavailable=e=>e.data.size&&ch.push(e.data);
- mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());$('#prev').style.display='none';$('#prev').srcObject=null;ui(false);const c=R.cancel,dur=Math.round((Date.now()-R.t0)/1000);clearInterval(R.iv);R=null;
-  if(c||!ch.length)return;const fr=new FileReader();fr.onload=()=>{if(fr.result.length>900000){toast('Запись слишком большая — сделайте короче');return}send({type:kind,data:fr.result,dur})};fr.readAsDataURL(new Blob(ch,{type:mr.mimeType}))};
- if(kind==='circle'){$('#prev').srcObject=st;$('#prev').style.display='block';$('#prev').play()}
+ mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());ui(false);const c=R.cancel,dur=Math.round((Date.now()-R.t0)/1000);clearInterval(R.iv);R=null;
+  if(c||!ch.length)return;const fr=new FileReader();fr.onload=()=>{if(fr.result.length>900000){toast('Запись слишком большая — сделайте короче');return}send({type:'voice',data:fr.result,dur})};fr.readAsDataURL(new Blob(ch,{type:mr.mimeType}))};
  mr.start();ui(true);R.iv=setInterval(()=>{const s=Math.floor((Date.now()-R.t0)/1000);$('#rt').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+' / '+max+'с';if(s>=max)stopRec()},250)}
 function stopRec(c){if(!R)return;R.cancel=!!c;R.mr.state!=='inactive'&&R.mr.stop()}
-function ui(on){$('#tx').style.display=on?'none':'';$('#recbar').style.display=on?'flex':'none';$('#bv').hidden=$('#bc').hidden=$('#ba').hidden=on}
+function ui(on){$('#tx').style.display=on?'none':'';$('#recbar').style.display=on?'flex':'none';$('#bv').hidden=$('#ba').hidden=on}
 
 /* ---------- groups & channels ---------- */
 function newChatModal(type){const us=Object.keys(S.users).filter(u=>u!==S.me&&!S.users[u].renamedTo).sort(),isCh=type==='channel';
@@ -565,12 +629,220 @@ async function renameUsername(raw){
    tx.update(oldRef,{renamedTo:nu})});
   try{const oldPriv=await db.doc('users/'+old+'/priv/contacts').get();
    await db.doc('users/'+nu+'/priv/contacts').set({list:(oldPriv.exists&&oldPriv.data().list)||[]})}catch(e){}
-  S.me=nu;ls.s('me',nu);toast('Готово! Теперь вы @'+nu);render();if(S.cur)head()
+  ACC.rename(old,nu);S.me=nu;ls.s('me',nu);toast('Готово! Теперь вы @'+nu);render();if(S.cur)head()
  }catch(x){const k=x.code||'',M={'auth/wrong-password':'Неверный пароль','auth/invalid-credential':'Неверный пароль','auth/requires-recent-login':'Войдите заново и повторите','taken':'Ник уже занят','permission-denied':'Ник уже занят или нет доступа'};
   toast(M[k]||'Ошибка: '+(k||x.message))}}
 
+/* =========================================================================
+   БОТ «РАСПИСАНИЕ КОЛЛЕДЖА» — виден только @temqua.
+   Это локальный чат-бот: чат не хранится в Firestore, а само расписание
+   лежит в приватном документе users/<me>/priv/schedule, поэтому
+   синхронизируется между вашими устройствами.
+   ========================================================================= */
+const BOT_ID='bot_rasp';
+const BOT_SITE='https://www.muiv.ru/studentu/spo/raspisanie/';
+const hasBot=()=>isCreator(S.me);
+const DOW=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+const DOWS=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+const cap=s=>s?s[0].toUpperCase()+s.slice(1):s;
+const dkey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const dadd=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
+const dfmt=d=>d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+
+function botLoad(){if(!hasBot())return;
+ db.doc('users/'+S.me+'/priv/schedule').onSnapshot(s=>{
+  S.bot.data=(s.exists&&s.data())||null;
+  if(S.cur===BOT_ID)renderBot()},()=>{})}
+async function botSave(patch){const cur=S.bot.data||{};const next={...cur,...patch,upd:Date.now()};
+ S.bot.data=next;
+ try{await db.doc('users/'+S.me+'/priv/schedule').set(next)}
+ catch(e){toast('Не удалось сохранить расписание: '+(e.code||e.message))}}
+
+/* --- какие пары в конкретный день --- */
+function lessonsFor(d){const D=S.bot.data||{};const k=dkey(d);
+ if(D.days&&D.days[k])return D.days[k];
+ const w=(D.week||{})[String(d.getDay())];
+ return w||null}
+function lessonsHtml(list){return list.map((l,i)=>
+ `<div class="les"><span class="num">${i+1}</span><div><b>${esc(l.s||'—')}</b>${l.t?`<div class="sub">🕒 ${esc(l.t)}</div>`:''}${l.r?`<div class="sub">📍 ${esc(l.r)}</div>`:''}${l.p?`<div class="sub">👤 ${esc(l.p)}</div>`:''}</div></div>`).join('')}
+function dayHtml(d){const L=lessonsFor(d),ttl=`<h4>${cap(DOW[d.getDay()])}, ${dfmt(d)}</h4>`;
+ if(!L)return ttl+'Расписание на этот день ещё не заведено.<br><button class="lnk" data-bota="edit" style="color:var(--acc)">✏️ Заполнить неделю</button>';
+ if(!L.length)return ttl+'🎉 Пар нет, выходной.';
+ return ttl+lessonsHtml(L)+`<div class="sub" style="margin-top:6px">Всего пар: ${L.length}</div>`}
+function weekHtml(from){let h='<h4>Расписание на неделю</h4>',n=0;
+ for(let i=0;i<7;i++){const d=dadd(from,i),L=lessonsFor(d);
+  if(!L||!L.length)continue;n++;
+  h+=`<div style="margin-top:8px"><b>${DOWS[d.getDay()]}, ${dfmt(d)}</b>${lessonsHtml(L)}</div>`}
+ return n?h:'<h4>Расписание на неделю</h4>Пар не найдено. Заполните неделю через «✏️ Редактировать».'}
+function nextLessonHtml(){const now=new Date();
+ for(let i=0;i<8;i++){const d=dadd(now,i),L=lessonsFor(d)||[];
+  for(const l of L){const m=String(l.t||'').match(/(\d{1,2})[:.](\d{2})/);if(!m)continue;
+   const st=new Date(d.getFullYear(),d.getMonth(),d.getDate(),+m[1],+m[2]);
+   if(st>now){const mins=Math.round((st-now)/60000),hh=Math.floor(mins/60);
+    return `<h4>Следующая пара</h4>${lessonsHtml([l])}<div class="sub" style="margin-top:6px">${i===0?'сегодня':i===1?'завтра':DOWS[d.getDay()]+', '+dfmt(d)} · через ${hh?hh+' ч ':''}${mins%60} мин</div>`}}}
+ return '<h4>Следующая пара</h4>Ближайших пар в расписании нет.'}
+
+/* --- сообщения бота --- */
+function botSay(html,me){S.bot.msgs.push({html,t:Date.now(),me:!!me});
+ if(S.bot.msgs.length>80)S.bot.msgs.shift();
+ if(S.cur===BOT_ID)renderBot()}
+function renderBot(){const box=$('#msgs');
+ box.innerHTML=S.bot.msgs.map(m=>`<div class="m botmsg ${m.me?'me':''}">${m.html}<div class="t">${tm(m.t)}</div></div>`).join('');
+ box.scrollTop=box.scrollHeight}
+function botRow(){const d=S.bot.data||{},hint=d.group?('группа '+d.group):(d.upd?'расписание загружено':'нажмите, чтобы настроить');
+ return `<div class="row ${S.cur===BOT_ID?'on':''}" data-chat="${BOT_ID}"><div class="av" style="background:#2ea1ff">🎓</div><div class="mid"><b>Расписание МУИВ ${VF('Бот')}</b><span class="sub">${esc(hint)}</span></div><span class="sub">бот</span></div>`}
+
+function leaveBot(){$('#botbar').hidden=true;$('#ba').hidden=false;$('#bv').hidden=false;$('#tx').placeholder='Сообщение'}
+function openBot(){if(!hasBot())return;
+ msgUn&&msgUn();msgUn=null;S.cur=BOT_ID;S.adminMode=false;clearReply();
+ $('#empty').hidden=true;$('#cv').hidden=false;$('#app').classList.add('open');
+ $('#hav').innerHTML='<div class="av" style="background:#2ea1ff">🎓</div>';
+ $('#htl').innerHTML='Расписание МУИВ '+VF('Бот');
+ $('#hsb').textContent='бот · виден только вам';
+ $('#addm').hidden=true;$('#hmenu').hidden=true;
+ $('#robar').hidden=true;$('#cmp').hidden=false;$('#botbar').hidden=false;
+ $('#ba').hidden=true;$('#bv').hidden=true;$('#tx').placeholder='сегодня / завтра / неделя';
+ if(!S.bot.msgs.length){
+  botSay('<h4>Привет! 🎓</h4>Я показываю расписание колледжа МУИВ (СПО).<br>Нажмите кнопку внизу или напишите словами: «сегодня», «завтра», «неделя».');
+  if(!(S.bot.data&&(S.bot.data.week||S.bot.data.days)))
+   botSay('Расписание пока пустое. Два способа заполнить:<br>1) <b>📥 Вставить расписание</b> — скопировать текст с сайта и вставить сюда;<br>2) <b>✏️ Редактировать</b> — вписать постоянные пары по дням недели.<br>Кнопка <b>🔄 Обновить с сайта</b> попробует забрать данные автоматически.');
+ }
+ const today=dkey(new Date());
+ if(S.bot.data&&(S.bot.data.week||S.bot.data.days)&&S.bot.autoDay!==today){S.bot.autoDay=today;botSay(dayHtml(new Date()))}
+ renderBot();render()}
+
+/* --- действия --- */
+function botAction(a){const now=new Date();
+ if(a==='today'){botSay('Сегодня',1);botSay(dayHtml(now));return}
+ if(a==='tomorrow'){botSay('Завтра',1);botSay(dayHtml(dadd(now,1)));return}
+ if(a==='week'){botSay('Неделя',1);botSay(weekHtml(now));return}
+ if(a==='next'){botSay('Следующая пара',1);botSay(nextLessonHtml());return}
+ if(a==='site'){window.open(BOT_SITE,'_blank','noopener');return}
+ if(a==='sync'){botSync();return}
+ if(a==='import'){botImportModal();return}
+ if(a==='edit'){botEditModal();return}}
+
+function botAsk(v){botSay(esc(v),1);const s=v.toLowerCase();
+ if(/завтра|tomorrow/.test(s))return botSay(dayHtml(dadd(new Date(),1)));
+ if(/послезавтра/.test(s))return botSay(dayHtml(dadd(new Date(),2)));
+ if(/недел|week|\/week/.test(s))return botSay(weekHtml(new Date()));
+ if(/следующ|ближайш|next/.test(s))return botSay(nextLessonHtml());
+ if(/сегодня|today|\/today|пары|расписан/.test(s))return botSay(dayHtml(new Date()));
+ if(/обнов|синхрон|sync/.test(s))return botSync();
+ if(/редакт|измен|запол/.test(s))return botEditModal();
+ for(let i=0;i<7;i++)if(s.includes(DOW[i].slice(0,5))){
+  const now=new Date();for(let k=0;k<7;k++){const d=dadd(now,k);if(d.getDay()===i)return botSay(dayHtml(d))}}
+ botSay('Не понял 🤔 Я знаю: <b>сегодня</b>, <b>завтра</b>, <b>неделя</b>, <b>следующая пара</b>, <b>обновить</b>, <b>редактировать</b>.')}
+
+/* --- попытка забрать расписание с сайта через CORS-прокси --- */
+async function fetchVia(url){const custom=(ls.g('botProxy')||'').trim();
+ const B=[];
+ if(custom)B.push(u=>custom.includes('{url}')?custom.replace('{url}',encodeURIComponent(u)):custom+encodeURIComponent(u));
+ B.push(u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u));
+ B.push(u=>'https://corsproxy.io/?url='+encodeURIComponent(u));
+ B.push(u=>'https://r.jina.ai/'+u);
+ let last='нет ответа';
+ for(const b of B){
+  try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),20000);
+   const r=await fetch(b(url),{signal:ctl.signal});clearTimeout(to);
+   if(!r.ok){last='HTTP '+r.status;continue}
+   const txt=await r.text();
+   if(txt&&txt.length>300)return txt;
+   last='пустой ответ'}
+  catch(e){last=e.name==='AbortError'?'таймаут':'сеть недоступна'}}
+ throw new Error(last)}
+async function botSync(){if(S.bot.busy)return;S.bot.busy=true;
+ botSay('Обновить с сайта',1);botSay('Секунду, стучусь на muiv.ru… ⏳');
+ try{const raw=await fetchVia(BOT_SITE);
+  if(/get_jhash|__js_p_/.test(raw)&&!/\d{1,2}[:.]\d{2}\s*[–—-]\s*\d{1,2}[:.]\d{2}/.test(raw))
+   throw new Error('стоит JS-защита Bitrix');
+  let days=null;
+  const t=raw.trim();
+  if(t[0]==='{'){const j=JSON.parse(t);
+   if(j.week){await botSave({week:j.week,group:j.group||(S.bot.data||{}).group||'',src:'web'});S.bot.busy=false;
+    botSay('Готово, расписание обновлено ✅');return botSay(dayHtml(new Date()))}
+   days=j.days||null}
+  if(!days)days=parseSchedText(htmlToText(raw));
+  const n=Object.keys(days||{}).length;
+  if(!n)throw new Error('на странице не нашлось таблицы с парами');
+  await botSave({days:{...((S.bot.data||{}).days||{}),...days},src:'web'});
+  botSay('Готово! Загружено дней: '+n+' ✅');botSay(dayHtml(new Date()))}
+ catch(e){
+  botSay('Не получилось забрать расписание автоматически: <b>'+esc(e.message||'ошибка')+'</b>.<br><br>'+
+   'Сайт МУИВ закрыт защитой Bitrix и не отдаёт данные обычному браузерному запросу — без своего сервера-посредника это не обойти.<br>'+
+   'Что можно сделать прямо сейчас:<br>'+
+   '• <button data-bota="site" style="color:var(--acc)">🌐 Открыть сайт</button>, выделить таблицу, скопировать — и <button data-bota="import" style="color:var(--acc)">📥 вставить сюда</button>, я разберу её на пары;<br>'+
+   '• или один раз заполнить постоянное расписание: <button data-bota="edit" style="color:var(--acc)">✏️ Редактировать</button>;<br>'+
+   '• если у вас есть свой прокси (Cloudflare Worker), укажите его в «Редактировать» — я буду ходить через него.')}
+ S.bot.busy=false}
+
+/* --- разбор вставленного/скачанного текста --- */
+function htmlToText(h){if(!/<[a-z!]/i.test(h))return h;
+ try{const d=new DOMParser().parseFromString(h,'text/html');
+  d.querySelectorAll('script,style,noscript').forEach(n=>n.remove());
+  d.querySelectorAll('td,th,br,p,div,tr,li').forEach(n=>n.insertAdjacentText('beforeend','\n'));
+  return (d.body&&d.body.innerText||d.body&&d.body.textContent||'')}
+ catch(e){return h.replace(/<[^>]+>/g,'\n')}}
+function parseSchedText(txt){const out={};let cur=null,y0=new Date().getFullYear();
+ String(txt).split(/\r?\n/).forEach(raw=>{const s=raw.replace(/\s+/g,' ').trim();if(!s)return;
+  const tt=s.match(/(\d{1,2}[:.]\d{2})\s*[–—-]\s*(\d{1,2}[:.]\d{2})/);
+  const dd=s.match(/(\d{1,2})[.\/](\d{1,2})(?:[.\/](\d{2,4}))?/);
+  if(dd&&!tt){const yy=dd[3]?(+dd[3]<100?2000+ +dd[3]:+dd[3]):y0;
+   cur=yy+'-'+String(+dd[2]).padStart(2,'0')+'-'+String(+dd[1]).padStart(2,'0');
+   out[cur]=out[cur]||[];return}
+  if(tt&&cur){const rest=s.slice(s.indexOf(tt[0])+tt[0].length).replace(/^[\s|·,–—-]+/,'').trim();
+   const parts=rest.split(/\s*[|;]\s*/);
+   out[cur].push({t:tt[1]+'–'+tt[2],s:parts[0]||'Занятие',r:parts[1]||'',p:parts[2]||''})}});
+ Object.keys(out).forEach(k=>{if(!out[k].length)delete out[k]});
+ return out}
+function botImportModal(){
+ $('#box').innerHTML=`<b>📥 Вставить расписание</b>
+  <div class="sub">Скопируйте таблицу с сайта (или из файла) и вставьте сюда. Я пойму строки вида:<br><code>22.09.2025</code><br><code>09:00–10:30 | Математика | каб. 312 | Иванов И.И.</code></div>
+  <textarea id="impt" rows="10" placeholder="Вставьте текст расписания…" style="min-height:180px"></textarea>
+  <div style="display:flex;gap:8px"><button class="pri" id="impok">Разобрать</button><button id="impno">Отмена</button></div>`;
+ $('#modal').hidden=false;$('#impno').onclick=()=>$('#modal').hidden=true;
+ $('#impok').onclick=async()=>{const v=$('#impt').value;if(!v.trim()){toast('Вставьте текст');return}
+  const days=parseSchedText(htmlToText(v)),n=Object.keys(days).length;
+  if(!n){toast('Не нашёл ни одной пары — проверьте формат');return}
+  await botSave({days:{...((S.bot.data||{}).days||{}),...days},src:'import'});
+  $('#modal').hidden=true;botSay('Импортировано дней: '+n+' ✅');botSay(dayHtml(new Date()))}}
+function botEditModal(){const D=S.bot.data||{},W=D.week||{};
+ const txt=i=>(W[String(i)]||[]).map(l=>[l.t||'',l.s||'',l.r||'',l.p||''].join(' | ').replace(/( \| )+$/,'')).join('\n');
+ $('#box').innerHTML=`<b>✏️ Постоянное расписание</b>
+  <div class="sub">Одна пара — одна строка: <code>время | предмет | кабинет | преподаватель</code>. Лишнее можно не писать.</div>
+  <input id="bgrp" placeholder="Номер группы (для себя)" maxlength="30" value="${esc(D.group||'')}">
+  ${[1,2,3,4,5,6].map(i=>`<div class="sub" style="margin-top:6px">${cap(DOW[i])}</div><textarea data-wd="${i}" rows="3" placeholder="09:00–10:30 | Математика | каб. 312">${esc(txt(i))}</textarea>`).join('')}
+  <div class="sub" style="margin-top:8px">Свой CORS-прокси для «Обновить с сайта» (необязательно)</div>
+  <input id="bprx" placeholder="https://my-worker.workers.dev/?url={url}" value="${esc(ls.g('botProxy')||'')}">
+  <div style="display:flex;gap:8px;margin-top:8px"><button class="pri" id="bwok">Сохранить</button><button id="bwno">Отмена</button><button id="bwclr" style="color:#e5484d">Очистить всё</button></div>`;
+ $('#modal').hidden=false;$('#bwno').onclick=()=>$('#modal').hidden=true;
+ $('#bwclr').onclick=async()=>{if(!confirm('Стереть всё расписание?'))return;
+  await botSave({week:{},days:{}});$('#modal').hidden=true;botSay('Расписание очищено.')};
+ $('#bwok').onclick=async()=>{const week={};
+  document.querySelectorAll('#box textarea[data-wd]').forEach(ta=>{
+   const arr=ta.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(line=>{
+    const p=line.split('|').map(x=>x.trim());
+    if(p.length>1)return{t:p[0],s:p[1]||'',r:p[2]||'',p:p[3]||''};
+    const m=line.match(/^(\d{1,2}[:.]\d{2}\s*[–—-]\s*\d{1,2}[:.]\d{2})\s*(.*)$/);
+    return m?{t:m[1],s:m[2]||'Занятие'}:{t:'',s:line}});
+   week[ta.dataset.wd]=arr});
+  const prx=$('#bprx').value.trim();prx?ls.s('botProxy',prx):ls.d('botProxy');
+  await botSave({week,group:$('#bgrp').value.trim()});
+  $('#modal').hidden=true;botSay('Расписание сохранено ✅');botSay(dayHtml(new Date()));render()}}
+
 /* ---------- events ---------- */
 document.addEventListener('click',async e=>{const t=e.target,c=t.closest('[data-chat]'),d=t.closest('[data-dm]'),a=t.closest('[data-add]');
+ /* --- аккаунты --- */
+ const adl=t.closest('[data-accdel]');if(adl){e.stopPropagation();const u=adl.dataset.accdel;
+  if(confirm('Убрать @'+u+' из списка аккаунтов на этом устройстве?')){ACC.del(u);if($('#auth').hidden===false)authAccs();else render()}return}
+ const arw=t.closest('[data-acc]');if(arw){switchAccount(arw.dataset.acc);return}
+ const alg=t.closest('[data-login]');if(alg){const u=alg.dataset.login,p=ACC.pass(u);
+  $('#au').value=u;setMode('login');
+  if(p){ls.d('addAcc');ls.s('switchTo',JSON.stringify({u,p}));location.reload()}else{$('#ap').focus();toast('Введите пароль от @'+u)}return}
+ if(t.id==='acancel'){const back=ACC.list()[0];ls.d('addAcc');if(back)switchAccount(back.u);else location.reload();return}
+ /* --- бот «Расписание» --- */
+ const bb2=t.closest('#botbar button');if(bb2){botAction(bb2.dataset.bot);return}
+ const bA=t.closest('[data-bota]');if(bA){botAction(bA.dataset.bota);return}
  const rb=t.closest('.rb:not(.mb)');if(rb){const r=rb.getBoundingClientRect(),p=$('#pk');p.dataset.id=rb.dataset.rid;p.hidden=false;p.style.top=Math.max(8,r.top-46)+'px';p.style.left=Math.min(innerWidth-p.offsetWidth-8,Math.max(8,r.left-100))+'px';e.stopPropagation();return}
  const mb=t.closest('.mb');if(mb){const r=mb.getBoundingClientRect();showMenuAt(mb.dataset.mid,r.bottom+6,r.left-120);e.stopPropagation();return}
  const pe=t.closest('#pk button');if(pe){$('#pk').hidden=true;react($('#pk').dataset.id,pe.dataset.e);return}
@@ -607,11 +879,12 @@ document.addEventListener('click',async e=>{const t=e.target,c=t.closest('[data-
  if(t.closest('#nc'))newChatModal('channel');
  if(t.id==='sv'){try{await db.doc('users/'+S.me).update({name:$('#sn').value.trim()||S.me});toast('Сохранено')}catch(x){toast('Ошибка')}}
  if(t.id==='unbtn'){const v=$('#nun')?.value.trim();if(!v){toast('Введите новый юзернейм');return}await renameUsername(v)}
- if(t.id==='lo'){goOffline();clearInterval(hbTimer);clearInterval(tickTimer);msgUn&&msgUn();firebase.auth().signOut().then(()=>location.reload())}
+ if(t.id==='lo'){goOffline();clearInterval(hbTimer);clearInterval(tickTimer);msgUn&&msgUn();forgetAccount(S.me);return}
+ if(t.id==='addacc'){addAccountFlow();return}
  if(t.id==='bl'){blacklistModal();return}
- if(t.id==='pw'){const p=prompt('Новый пароль (минимум 6 символов)');if(p&&p.length>=6){try{await firebase.auth().currentUser.updatePassword(p);toast('Пароль изменён')}catch(x){toast(x.code==='auth/requires-recent-login'?'Выйдите, войдите заново и повторите':'Ошибка: '+x.code)}}else if(p)toast('Минимум 6 символов')}
- if(t.id==='back'){$('#app').classList.remove('open');S.cur=null;S.adminMode=false;msgUn&&msgUn();render()}
- if(t.id==='bs'){R?stopRec():sendText()}if(t.id==='bv')startRec('voice');if(t.id==='bc')startRec('circle');if(t.id==='rc')stopRec(1);
+ if(t.id==='pw'){const p=prompt('Новый пароль (минимум 6 символов)');if(p&&p.length>=6){try{await firebase.auth().currentUser.updatePassword(p);ACC.add(S.me,p,(S.users[S.me]||{}).name);toast('Пароль изменён')}catch(x){toast(x.code==='auth/requires-recent-login'?'Выйдите, войдите заново и повторите':'Ошибка: '+x.code)}}else if(p)toast('Минимум 6 символов')}
+ if(t.id==='back'){$('#app').classList.remove('open');leaveBot();$('#cv').hidden=true;$('#empty').hidden=false;S.cur=null;S.adminMode=false;msgUn&&msgUn();render()}
+ if(t.id==='bs'){R?stopRec():sendText()}if(t.id==='bv')startRec();if(t.id==='rc')stopRec(1);
  if(t.id==='rpx')clearReply();
  if(t.id==='modal')t.hidden=true});
 document.addEventListener('change',async e=>{const t=e.target;
@@ -628,9 +901,9 @@ $('#tx').oninput=e=>{const el=e.target;el.style.height='auto';el.style.height=Ma
 $('#au').onkeydown=$('#an').onkeydown=$('#ap').onkeydown=e=>{if(e.key==='Enter')register()};$('#asw').onclick=()=>setMode(AM==='reg'?'login':'reg');$('#ago').onclick=register;
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(S.cur)markRead(S.cur);render();if(S.cur)head()}});
 {const M=$('#msgs');let LP,sx=0,sy=0,lastTapId=0,lastTapT=0;
- M.addEventListener('pointerdown',e=>{const m=e.target.closest('.m');if(!m||e.target.closest('audio,button,.rx,.att-file,.att-img,video'))return;sx=e.clientX;sy=e.clientY;clearTimeout(LP);LP=setTimeout(()=>msgMenu(m),500)});
+ M.addEventListener('pointerdown',e=>{if(S.cur===BOT_ID)return;const m=e.target.closest('.m');if(!m||e.target.closest('audio,button,.rx,.att-file,.att-img,video'))return;sx=e.clientX;sy=e.clientY;clearTimeout(LP);LP=setTimeout(()=>msgMenu(m),500)});
  M.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>12)clearTimeout(LP)});
- M.addEventListener('pointerup',e=>{clearTimeout(LP);if(S.lpFired){setTimeout(()=>S.lpFired=false,150);return}
+ M.addEventListener('pointerup',e=>{clearTimeout(LP);if(S.cur===BOT_ID)return;if(S.lpFired){setTimeout(()=>S.lpFired=false,150);return}
   const m=e.target.closest('.m');if(!m||e.target.closest('audio,button,.rx,.att-file,.att-img,video'))return;
   const id=m.id.slice(2),now=Date.now();
   if(lastTapId===id&&now-lastTapT<300){react(id,'❤️');popHeart(m);lastTapId=0}else{lastTapId=id;lastTapT=now}});
@@ -638,12 +911,12 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(S.cur)
  M.addEventListener('contextmenu',e=>{if(e.target.closest('.m'))e.preventDefault()});
  M.addEventListener('click',e=>{if(S.lpFired){e.stopPropagation();e.preventDefault()}},true)}
 {const L=$('#list');let T,cx=0,cy=0;
- const start=e=>{const r=e.target.closest('[data-chat]');if(!r||e.target.closest('button'))return;cx=e.clientX;cy=e.clientY;clearTimeout(T);
+ const start=e=>{const r=e.target.closest('[data-chat]');if(!r||r.dataset.chat===BOT_ID||e.target.closest('button'))return;cx=e.clientX;cy=e.clientY;clearTimeout(T);
   T=setTimeout(()=>{S.lpChat=true;chatMenu(r.dataset.chat,cy,cx)},500)};
  L.addEventListener('pointerdown',start);
  L.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-cx)+Math.abs(e.clientY-cy)>12)clearTimeout(T)});
  ['pointerup','pointercancel','pointerleave','scroll'].forEach(n=>L.addEventListener(n,()=>clearTimeout(T)));
- L.addEventListener('contextmenu',e=>{const r=e.target.closest('[data-chat]');if(!r)return;e.preventDefault();S.lpChat=true;chatMenu(r.dataset.chat,e.clientY,e.clientX)});
+ L.addEventListener('contextmenu',e=>{const r=e.target.closest('[data-chat]');if(!r||r.dataset.chat===BOT_ID)return;e.preventDefault();S.lpChat=true;chatMenu(r.dataset.chat,e.clientY,e.clientX)});
  L.addEventListener('click',e=>{if(S.lpChat){e.stopPropagation();e.preventDefault();setTimeout(()=>S.lpChat=false,150)}},true)}
 if(ls.g('theme'))document.documentElement.dataset.theme=ls.g('theme');
 
@@ -652,7 +925,25 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.s
 (async()=>{
  try{firebase.initializeApp(window.FIREBASE_CONFIG);db=firebase.firestore()}
  catch(e){document.body.innerHTML='<div style="padding:30px;text-align:center">Не удалось подключиться к Firebase. Проверьте firebase-config.js.<br><small>'+esc(e.code||e.message)+'</small></div>';return}
- const savedUser=ls.g('me');
- if(savedUser){setMode('login');$('#au').value=savedUser}else{setMode('reg')}
+ const savedUser=ls.g('prefillUser')||ls.g('me');ls.d('prefillUser');
+ if(savedUser||ACC.list().length){setMode('login');$('#au').value=savedUser||''}else{setMode('reg')}
+
+ /* переключение на другой сохранённый аккаунт */
+ const sw=ls.g('switchTo');
+ if(sw){ls.d('switchTo');
+  try{const {u,p}=JSON.parse(sw);
+   await firebase.auth().signOut().catch(()=>{});
+   ls.s('lastPass',p);
+   const c=await firebase.auth().signInWithEmailAndPassword(EM(u),p);
+   ls.d('addAcc');await boot(c.user);return}
+  catch(e){const bad=(()=>{try{return JSON.parse(sw).u}catch(x){return null}})();
+   if(bad){ACC.del(bad);$('#au').value=bad}
+   setMode('login');$('#ae').textContent='Не удалось войти в этот аккаунт — введите пароль заново';$('#auth').hidden=false;return}}
+
+ /* режим «добавить аккаунт»: показываем форму входа, сессию не трогаем до успеха */
+ if(ls.g('addAcc')==='1'){
+  await firebase.auth().signOut().catch(()=>{});
+  setMode('login');$('#auth').hidden=false;return}
+
  let un;un=firebase.auth().onAuthStateChanged(async u=>{un&&un();if(u&&u.email){try{await boot(u)}catch(e){$('#auth').hidden=false}}else $('#auth').hidden=false})})();
 </script></body></html>
